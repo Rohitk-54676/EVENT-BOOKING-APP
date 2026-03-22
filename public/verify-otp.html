@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify OTP</title>
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+
+  <!-- Branding -->
+  <div class="branding">
+    <h1>EventZ</h1>
+    <p>Join and book amazing events around you</p>
+  </div>
+
+  <!-- Form -->
+  <form id="otpForm" class="auth-form">
+
+    <h2>Verify OTP</h2>
+    <p class="switch">Enter the 6-digit OTP sent to your email</p>
+
+    <div class="input-group">
+      <input type="text" id="otp" placeholder=" " maxlength="6" />
+      <label>Enter OTP</label>
+    </div>
+
+    <button type="submit">Verify</button>
+
+    <!-- Dynamic links -->
+    <p id="resendSection" class="switch">
+      Didn't receive OTP?
+      <a href="#" id="resendOtp">Resend</a>
+    </p>
+
+    <p id="msg"></p>
+
+  </form>
+
+  <script src="js/verifyOtp.js"></script>
+
+</body>
+
+</html>

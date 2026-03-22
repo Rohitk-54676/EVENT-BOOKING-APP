@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body>
+
+    <!-- Branding -->
+    <div class="branding">
+        <h1>EventZ</h1>
+        <p>Join and book amazing events around you</p>
+    </div>
+
+    <!-- Form -->
+    <form id="loginForm" class="auth-form">
+
+        <h2>Welcome Back</h2>
+
+        <div class="input-group">
+            <input type="email" id="email" placeholder=" " />
+            <label>Email</label>
+        </div>
+
+        <div class="input-group">
+            <input type="password" id="password" placeholder=" " />
+            <label>Password</label>
+        </div>
+
+        <button type="submit">Login</button>
+
+        <p id="registerLink" class="switch" style="display:none;">
+            Not registered?
+            <a href="register.html">Create account</a>
+        </p>
+
+        <p id="forgotLink" class="switch" style="display:none;">
+            <a href="forgot.html">Forgot Password?</a>
+        </p>
+        <p id="msg"></p>
+
+    </form>
+
+    <script src="js/login.js"></script>
+
+</body>
+
+</html>

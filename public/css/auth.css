@@ -1,0 +1,200 @@
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* FULL BACKGROUND */
+body {
+  min-height: 100vh;
+  background: url('../images/event-bg.jpg') center/cover no-repeat;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 5%;
+  position: relative;
+}
+
+/* 🔥 BRANDING (TOP LEFT) */
+.branding {
+  position: absolute;
+  top: 30px;
+  left: 40px;
+
+  color: white;
+  max-width: 400px;
+  padding: 20px;
+
+  background: linear-gradient(
+    to right,
+    rgba(2, 6, 23, 0.85),
+    rgba(2, 6, 23, 0.4),
+    transparent
+  );
+
+  border-radius: 10px;
+  animation: fadeInLeft 0.8s ease;
+}
+
+.branding h1 {
+  font-size: 3.2rem;
+  font-weight: 700;
+}
+
+.branding p {
+  margin-top: 10px;
+  font-size: 1.05rem;
+  opacity: 0.85;
+}
+
+/* FORM (RIGHT SIDE GLASS) */
+.auth-form {
+  width: 100%;
+  max-width: 380px;
+  padding: 30px;
+  border-radius: 16px;
+
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  animation: slideIn 0.6s ease;
+}
+
+/* TITLE */
+.auth-form h2 {
+  text-align: center;
+  color: white;
+  font-weight: 600;
+}
+
+/* INPUT GROUP */
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(2, 6, 23, 0.7);
+  color: white;
+  outline: none;
+  transition: 0.3s;
+}
+
+/* LABEL */
+.input-group label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.9rem;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+/* 🔥 FLOATING LABEL FIX (CORRECT LOGIC) */
+.input-group input:focus,
+.input-group input:not(:placeholder-shown) {
+  border-color: #3b82f6;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 10px;
+  font-size: 0.75rem;
+  padding: 0 5px;
+  color: #ffffff;
+}
+
+/* BUTTON */
+button {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+/* LINK */
+.switch {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #cbd5f5;
+}
+
+.switch a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+/* MESSAGE */
+#msg {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* ANIMATIONS */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 🔥 RESPONSIVE */
+
+/* Tablet */
+@media (max-width: 900px) {
+  body {
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .branding {
+    display: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .auth-form {
+    padding: 20px;
+    border-radius: 12px;
+  }
+}

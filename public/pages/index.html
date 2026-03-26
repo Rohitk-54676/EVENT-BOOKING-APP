@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Event Booking</title>
+  <title>Eventify</title>
   <link rel="stylesheet" href="/public/css/main.css">
 </head>
 <body>
 
-<nav>
+<!-- 🔹 NAVBAR -->
+<nav class="nav">
   <h2>Eventify</h2>
 
-  <div id="navButtons">
-    <button id="loginBtn">Login</button>
-    <button id="logoutBtn" style="display:none;">Logout</button>
-  </div>
+  <div id="navButtons"></div>
 </nav>
 
-<div class="container">
+<!-- 🔹 HERO -->
+<section class="container">
+  <h1>Discover & Book Events</h1>
+  <p>Find sports, tech, and fun events near you.</p>
+</section>
 
-  <h1>Welcome to Event Booking</h1>
+<!-- 🔹 EVENTS -->
+<section class="container">
+  <h2>Upcoming Events</h2>
 
-  <p id="welcomeMsg">Browse events and book tickets easily.</p>
-
-  <button id="bookBtn" style="display:none;">Book Tickets</button>
-
-</div>
+  <div id="event-list" class="event-grid">
+    <!-- Events will load here -->
+  </div>
+</section>
 
 <script src="/public/js/main.js"></script>
 

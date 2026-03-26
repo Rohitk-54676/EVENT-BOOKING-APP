@@ -44,7 +44,7 @@ form.addEventListener("submit", async (e) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: userData.email }),
+      body: JSON.stringify(userData)
     });
 
     const data = await res.json();
@@ -63,7 +63,7 @@ form.addEventListener("submit", async (e) => {
     }
 
     // ⚠️ still temporary storage (acceptable for OTP flow)
-    localStorage.setItem("userData", JSON.stringify(userData));
+    localStorage.setItem("verifyEmail",userData.email);
 
     showMessage("OTP sent! Redirecting...", "green");
 

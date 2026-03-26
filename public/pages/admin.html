@@ -1,17 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Dashboard</title>
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="/public/css/main.css">
 </head>
 <body>
 
-<h2>Admin Dashboard</h2>
+<h2>Create Event</h2>
 
-<p>Welcome Admin 👨‍💼</p>
+<form id="eventForm">
 
-<button id="logoutBtn">Logout</button>
+  <input type="text" id="title" placeholder="Event Title" required /><br><br>
 
-<script src="js/admin.js"></script>
+  <textarea id="description" placeholder="Description"></textarea><br><br>
+
+  <input type="date" id="date" required /><br><br>
+
+  <input type="text" id="location" placeholder="Location" /><br><br>
+
+  <input type="number" id="price" placeholder="Price" /><br><br>
+
+  <input type="number" id="maxParticipants" placeholder="Max Participants" required /><br><br>
+
+  <input type="text" id="image" placeholder="Image URL" /><br><br>
+
+  <button type="submit">Create Event</button>
+
+</form>
+
+<p id="msg"></p>
+
+<script src="/public/js/admin.js"></script>
 
 </body>
 </html>

@@ -3,39 +3,95 @@ body {
   font-family: Arial, sans-serif;
   background: #0f172a;
   color: white;
-  text-align: center;
 }
 
+/* 🔹 NAVBAR */
 nav {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 15px 30px;
   background: #1e293b;
 }
 
+/* 🔹 BUTTONS */
 button {
-  padding: 8px 15px;
+  padding: 8px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-#loginBtn {
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* 🔹 BUTTON STATES */
+button.register {
   background: #3b82f6;
   color: white;
 }
 
-#logoutBtn {
-  background: red;
+button.registered {
+  background: #22c55e;
   color: white;
 }
 
-#bookBtn {
-  background: green;
+button.full {
+  background: #ef4444;
   color: white;
-  margin-top: 20px;
 }
 
+/* 🔹 CONTAINER */
 .container {
-  margin-top: 80px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* 🔥 MAIN FIX — EVENT GRID */
+.event-grid {
+  display: flex;
+  flex-wrap: wrap;        /* allows next row */
+  justify-content: center; /* center cards */
+  gap: 20px;              /* spacing between cards */
+  margin-top: 30px;
+}
+
+/* 🔹 EVENT CARD */
+.event-card {
+  background: #1e293b;
+  border-radius: 10px;
+  padding: 12px;
+  width: 250px;
+  text-align: left;
+  transition: transform 0.2s;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+}
+
+/* 🔹 IMAGE */
+.event-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* 🔹 TEXT */
+.event-card h3 {
+  margin: 10px 0 5px;
+}
+
+.event-card p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* 🔹 MESSAGE */
+.msg {
+  margin-top: 8px;
+  font-size: 13px;
 }

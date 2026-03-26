@@ -11,14 +11,14 @@ form.addEventListener("submit", async (e) => {
   clearUI();
 
   const otp = getValue("otp");
-  const userData = JSON.parse(localStorage.getItem("userData"));
+  const email = localStorage.getItem("verifyEmail");
 
   // 🔥 VALIDATION
   if (!/^[0-9]{6}$/.test(otp)) {
     return showError("Enter a valid 6-digit OTP", "otp");
   }
 
-  if (!userData) {
+  if (!email) {
     return showMessage("Session expired. Please register again.", "#f87171");
   }
 
@@ -32,7 +32,7 @@ form.addEventListener("submit", async (e) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...userData, otp }),
+      body: JSON.stringify({ email, otp }),
     });
 
     const data = await res.json();
@@ -44,8 +44,7 @@ form.addEventListener("submit", async (e) => {
     }
 
     showMessage("Signup successful!", "#34d399");
-
-    localStorage.removeItem("userData");
+    localStorage.removeItem("verifyEmail");
 
     setTimeout(() => {
       window.location.href = "login.html";
@@ -62,27 +61,27 @@ form.addEventListener("submit", async (e) => {
 resendBtn.addEventListener("click", async (e) => {
   e.preventDefault();
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
+  const email = localStorage.getItem("verifyEmail");
 
-  if (!userData) {
+  if (!email) {
     return showMessage("Session expired. Please register again.", "#f87171");
   }
 
   showMessage("Resending OTP...", "white");
 
   try {
-    const res = await fetch(`${API_URL}/register`, {
+    const res = await fetch(`${API_URL}/resend-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email: userData.email }),
+      body: JSON.stringify({ email }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      showMessage(data.message || "Please wait before requesting again", "#f87171");
+      showMessage(data.message || "Please try again", "#f87171");
       return;
     }
 

@@ -14,25 +14,33 @@ function getUser() {
 
 const user = getUser();
 
-// 🔹 Render Navbar
+// 🔹 Navbar
 function renderNavbar() {
   if (!user) {
     navButtons.innerHTML = `
+    <button onclick="goBookings()">My Bookings</button>
       <button onclick="goLogin()">Login</button>
     `;
-  } else if (user.role === "admin") {
-    navButtons.innerHTML = `
-      <button onclick="goAdmin()">Dashboard</button>
-      <button onclick="logout()">Logout</button>
-    `;
   } else {
-    navButtons.innerHTML = `
+    let buttons = `
+      <button onclick="goBookings()">My Bookings</button>
+    `;
+
+    if (user.role === "admin") {
+      buttons += `
+        <button onclick="goAdmin()">Dashboard</button>
+      `;
+    }
+
+    buttons += `
       <button onclick="logout()">Logout</button>
     `;
+
+    navButtons.innerHTML = buttons;
   }
 }
 
-// 🔹 Navigation functions (IMPORTANT FIX HERE)
+// 🔹 Navigation
 function goLogin() {
   window.location.href = "/public/pages/login.html";
 }
@@ -46,16 +54,27 @@ function logout() {
   window.location.reload();
 }
 
-// 🔹 Run
-renderNavbar();
+function goBookings() {
+  const token = localStorage.getItem("token");
 
+  if (!token) {
+    window.location.href = "/public/pages/login.html";
+  } else {
+    window.location.href = "/public/pages/my-bookings.html";
+  }
+}
 
+// 🔹 NEW: View Event
+function viewEvent(id) {
+  console.log("Redirecting to event:", id);
+  window.location.href = `/public/pages/event.html?id=${id}`;
+}
+
+// 🔹 Load Events
 async function loadEvents() {
   try {
-    const token = localStorage.getItem("token");
-
-    // 🔹 Request options
     const options = {};
+
     if (token) {
       options.headers = {
         Authorization: `Bearer ${token}`
@@ -68,7 +87,6 @@ async function loadEvents() {
     const container = document.getElementById("event-list");
     container.innerHTML = "";
 
-    // 🔹 Empty state
     if (events.length === 0) {
       container.innerHTML = "<p>No events available</p>";
       return;
@@ -83,92 +101,35 @@ async function loadEvents() {
           ? event.image_url
           : "https://via.placeholder.com/300";
 
-      let buttonHTML = "";
-
-      if (event.isRegistered) {
-        buttonHTML = `<button class="registered" disabled>Registered</button>`;
-      }
-      else if (event.isFull) {
-        buttonHTML = `<button class="full" disabled>Full</button>`;
-      }
-      else {
-        buttonHTML = `<button class="register" onclick="register(${event.id}, this)">Register</button>`;
-      }
+      let buttonHTML = `
+      <button class="view" onclick="viewEvent(${event.id})">
+      View Details
+      </button>
+      `;
 
       div.innerHTML = `
-    <img 
-      src="${imageSrc}" 
-      onerror="this.onerror=null; this.src='https://via.placeholder.com/300';"
-    />
-    <h3>${event.title}</h3>
-    <p>${event.description}</p>
-    <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
+        <img 
+          src="${imageSrc}" 
+          onerror="this.onerror=null; this.src='https://via.placeholder.com/300';"
+        />
+        <h3>${event.title}</h3>
+        <p>${event.description.substring(0, 80)}...</p>
+        <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
 
-    ${buttonHTML}
+        ${buttonHTML}
 
-    <p class="msg" id="msg-${event.id}"></p>
-  `;
+        <p class="msg" id="msg-${event.id}"></p>
+      `;
 
       container.appendChild(div);
     });
 
   } catch (err) {
     console.error("Error loading events:", err);
-
-    const container = document.getElementById("event-list");
-    container.innerHTML = "<p>Failed to load events</p>";
+    document.getElementById("event-list").innerHTML = "<p>Failed to load events</p>";
   }
 }
 
-// 🔹 Run
+// 🔹 Init
+renderNavbar();
 loadEvents();
-
-async function register(eventId, btn) {
-  const token = localStorage.getItem("token");
-  const msgEl = document.getElementById(`msg-${eventId}`);
-
-  msgEl.innerText = "";
-
-  if (!token) {
-    msgEl.innerText = "Please login first";
-    msgEl.style.color = "red";
-    return;
-  }
-
-  try {
-    const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      // 🔥 Important: DO NOT show "Already registered" message
-      if (data.message === "Already registered") {
-        btn.innerText = "Registered";
-        btn.disabled = true;
-        btn.className = "registered";
-        return;
-      }
-
-      msgEl.innerText = data.message;
-      msgEl.style.color = "red";
-      return;
-    }
-
-    // ✅ Success
-    btn.innerText = "Registered";
-    btn.disabled = true;
-    btn.className = "registered";
-
-    msgEl.innerText = "Successfully registered";
-    msgEl.style.color = "green";
-
-  } catch (err) {
-    msgEl.innerText = "Something went wrong";
-    msgEl.style.color = "red";
-  }
-}

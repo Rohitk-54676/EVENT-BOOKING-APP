@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scan Ticket</title>
+</head>
+<body>
+
+<h2>Scan Ticket</h2>
+
+<!-- 🔥 Start Scanner -->
+<button onclick="startScanner()">Start Scanner</button>
+<button onclick="stopScanner()">Stop Scanner</button>
+
+<!-- 🔥 Camera container -->
+<div id="reader" style="width:300px; display:none; margin-top:10px;"></div>
+
+<p>OR</p>
+
+<!-- 🔹 Manual entry -->
+<input type="text" id="code" placeholder="Enter ticket code" />
+<button onclick="verify()">Verify</button>
+
+<p id="msg"></p>
+
+<!-- QR Library -->
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<!-- Your JS -->
+<script src="/public/js/scan.js"></script>
+
+</body>
+</html>

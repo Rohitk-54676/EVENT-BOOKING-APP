@@ -18,17 +18,22 @@
 
   <input type="text" id="location" placeholder="Location" /><br><br>
 
-  <input type="number" id="price" placeholder="Price" /><br><br>
-
-  <input type="number" id="maxParticipants" placeholder="Max Participants" required /><br><br>
-
   <input type="text" id="image" placeholder="Image URL" /><br><br>
+
+  <h3>Tickets</h3>
+
+  <div id="ticketsContainer"></div>
+
+  <button type="button" onclick="addTicket()">+ Add Ticket</button><br><br>
 
   <button type="submit">Create Event</button>
 
 </form>
-
 <p id="msg"></p>
+<button onclick="goScan()">Scan Tickets</button>
+<h2>Your Events</h2>
+<div id="adminEvents"></div>
+
 
 <script src="/public/js/admin.js"></script>
 

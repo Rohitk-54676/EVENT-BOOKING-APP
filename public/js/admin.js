@@ -1,5 +1,6 @@
 let editMode = false;
 let editEventId = null;
+
 const form = document.getElementById("eventForm");
 const msg = document.getElementById("msg");
 const ticketsContainer = document.getElementById("ticketsContainer");
@@ -10,10 +11,13 @@ function addTicket() {
   div.classList.add("ticket-row");
 
   div.innerHTML = `
-    <input type="text" placeholder="Ticket Name (Gold / Team)" class="t-name" required />
+    <input type="hidden" class="t-id" value="" />   <!-- 🔥 IMPORTANT -->
+
+    <input type="text" placeholder="Ticket Name" class="t-name" required />
     <input type="number" placeholder="Price" class="t-price" required />
     <input type="number" placeholder="Max Seats" class="t-max" required />
-    <input type="number" placeholder="Team Size (1 for normal)" class="t-team" value="1" />
+    <input type="number" placeholder="Team Size" class="t-team" value="1" />
+
     <button type="button" onclick="this.parentElement.remove()">Remove</button>
     <br><br>
   `;
@@ -21,10 +25,10 @@ function addTicket() {
   ticketsContainer.appendChild(div);
 }
 
-// 🔹 Add one default ticket on load
+// 🔹 Default row
 addTicket();
 
-// 🔹 Submit
+// 🔹 SUBMIT FORM
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -36,12 +40,12 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  // 🔹 Collect tickets
   const ticketRows = document.querySelectorAll(".ticket-row");
-
   const tickets = [];
 
   ticketRows.forEach(row => {
+    const id = row.querySelector(".t-id")?.value;
+
     const name = row.querySelector(".t-name").value;
     const price = row.querySelector(".t-price").value;
     const max = row.querySelector(".t-max").value;
@@ -49,6 +53,7 @@ form.addEventListener("submit", async (e) => {
 
     if (name && price && max) {
       tickets.push({
+        id: id ? Number(id) : null,   // 🔥 CRITICAL FIX
         name,
         price: Number(price),
         max_quantity: Number(max),
@@ -96,12 +101,17 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
-    msg.innerText = "Event created successfully";
+    msg.innerText = editMode ? "Event updated successfully" : "Event created successfully";
     msg.style.color = "green";
 
     form.reset();
     ticketsContainer.innerHTML = "";
     addTicket();
+
+    editMode = false;
+    editEventId = null;
+
+    loadAdminEvents();
 
   } catch (err) {
     msg.innerText = "Server error";
@@ -109,7 +119,7 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-
+// 🔹 LOAD ADMIN EVENTS
 async function loadAdminEvents() {
   const token = localStorage.getItem("token");
 
@@ -129,34 +139,45 @@ async function loadAdminEvents() {
     div.classList.add("admin-card");
 
     div.innerHTML = `
-  <img src="${event.image_url || 'https://via.placeholder.com/200'}" width="200"/>
+      <img src="${event.image_url || 'https://via.placeholder.com/200'}" width="200"/>
 
-  <h3>${event.title}</h3>
-  <p>${new Date(event.date).toLocaleDateString()}</p>
+      <h3>${event.title}</h3>
+      <p>${new Date(event.date).toLocaleDateString()}</p>
 
-  <button onclick="editEvent(${event.id})">Edit</button>
-  <button onclick="startDelete(${event.id})">Delete</button>
-  <button onclick="viewRegistrations(${event.id})">View Registrations</button>
-  <button onclick="downloadExcel(${event.id})">Download Excel</button>
+      <button class="edit-btn" onclick="editEvent(${event.id})">Edit</button>
+      <button class="delete-btn" onclick="startDelete(${event.id})">Delete</button>
+      <button onclick="viewRegistrations(${event.id})">View Registrations</button>
+      <button onclick="downloadExcel(${event.id})">Download Excel</button>
 
-  <!-- 🔥 OTP BOX (per card) -->
-  <div id="otp-${event.id}" style="display:none; margin-top:10px;">
-    <input type="text" id="otpInput-${event.id}" placeholder="Enter OTP" />
-    <button onclick="confirmDelete(${event.id})">Confirm</button>
-    <button onclick="cancelDelete(${event.id})">Cancel</button>
-  </div>
+      <p class="status-text"></p>
 
-  <hr>
-`;
+      <div id="otp-${event.id}" style="display:none; margin-top:10px;">
+        <input type="text" id="otpInput-${event.id}" placeholder="Enter OTP" />
+        <button onclick="confirmDelete(${event.id})">Confirm</button>
+        <button onclick="cancelDelete(${event.id})">Cancel</button>
+      </div>
+
+      <hr>
+    `;
+
+    const editBtn = div.querySelector(".edit-btn");
+    const deleteBtn = div.querySelector(".delete-btn");
+    const statusText = div.querySelector(".status-text");
+
+    if (event.is_deleted) {
+      editBtn.disabled = true;
+      deleteBtn.disabled = true;
+
+      statusText.innerText = "Event Deleted ❌";
+      statusText.style.color = "red";
+    }
 
     container.appendChild(div);
   });
 }
 loadAdminEvents();
 
-
-
-
+// 🔹 EDIT EVENT
 async function editEvent(id) {
   const token = localStorage.getItem("token");
 
@@ -168,18 +189,15 @@ async function editEvent(id) {
 
   const event = await res.json();
 
-  // 🔹 switch mode
   editMode = true;
   editEventId = id;
 
-  // 🔹 fill form
   document.getElementById("title").value = event.title;
   document.getElementById("description").value = event.description;
   document.getElementById("date").value = event.date.split("T")[0];
   document.getElementById("location").value = event.location;
   document.getElementById("image").value = event.image_url || "";
 
-  // 🔹 load tickets
   const container = document.getElementById("ticketsContainer");
   container.innerHTML = "";
 
@@ -188,10 +206,13 @@ async function editEvent(id) {
     div.classList.add("ticket-row");
 
     div.innerHTML = `
+      <input type="hidden" class="t-id" value="${t.id}" />
+
       <input type="text" class="t-name" value="${t.name}" />
       <input type="number" class="t-price" value="${t.price}" />
       <input type="number" class="t-max" value="${t.max_quantity}" />
       <input type="number" class="t-team" value="${t.team_size}" />
+
       <button type="button" disabled style="opacity:0.5;">Cannot Remove</button>
       <br><br>
     `;
@@ -202,23 +223,15 @@ async function editEvent(id) {
   window.scrollTo(0, 0);
 }
 
-
-
-
-
-
-
+// 🔹 DELETE FLOW
 async function startDelete(id) {
   const token = localStorage.getItem("token");
 
   await fetch(`http://localhost:5000/api/events/${id}/send-delete-otp`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
 
-  // show OTP input only for this event
   document.getElementById(`otp-${id}`).style.display = "block";
 }
 
@@ -236,19 +249,16 @@ async function confirmDelete(id) {
   });
 
   const data = await res.json();
-
   alert(data.message);
 
-  if (res.ok) {
-    loadAdminEvents();
-  }
+  if (res.ok) loadAdminEvents();
 }
 
 function cancelDelete(id) {
   document.getElementById(`otp-${id}`).style.display = "none";
-  document.getElementById(`otpInput-${id}`).value = "";
 }
 
+// 🔹 NAVIGATION
 function viewRegistrations(id) {
   window.location.href = `/public/pages/registrations.html?id=${id}`;
 }
@@ -256,35 +266,19 @@ function viewRegistrations(id) {
 async function downloadExcel(id) {
   const token = localStorage.getItem("token");
 
-  try {
-    const res = await fetch(`http://localhost:5000/api/events/${id}/export`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+  const res = await fetch(`http://localhost:5000/api/events/${id}/export`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
 
-    if (!res.ok) {
-      alert("Download failed");
-      return;
-    }
+  const blob = await res.blob();
+  const url = window.URL.createObjectURL(blob);
 
-    const blob = await res.blob();
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `event-${id}.xlsx`;
+  a.click();
 
-    const url = window.URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `event-${id}.xlsx`;
-    document.body.appendChild(a);
-    a.click();
-
-    a.remove();
-    window.URL.revokeObjectURL(url);
-
-  } catch (err) {
-    console.error(err);
-    alert("Error downloading file");
-  }
+  window.URL.revokeObjectURL(url);
 }
 
 function goScan() {

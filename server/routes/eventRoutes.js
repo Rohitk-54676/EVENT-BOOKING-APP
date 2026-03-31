@@ -15,6 +15,7 @@ import {
 } from "../controllers/eventcontroller.js";
 
 import { authMiddleware, optionalAuth } from "../middleware/authMiddleware.js";
+import { bookingLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
@@ -32,7 +33,7 @@ router.get("/:id/export", authMiddleware, exportEventData);
 router.post("/:id/send-delete-otp", authMiddleware, sendDeleteOTP);
 router.post("/:id/delete", authMiddleware, deleteEventWithOTP);
 router.put("/:id", authMiddleware, updateEvent);
-router.post("/:id/register", authMiddleware, registerEvent);
+router.post("/:id/register", bookingLimiter,authMiddleware, registerEvent);
 
 // 🔹 GENERIC PARAM ROUTE (MUST BE LAST)
 router.get("/:id", optionalAuth, getEventById);

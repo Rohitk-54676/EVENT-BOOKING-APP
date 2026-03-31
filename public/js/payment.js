@@ -8,7 +8,7 @@ const ticketId = Number(params.get("ticket")); // 🔥 IMPORTANT
 
 async function pay() {
     const msg = document.getElementById("msg");
-    const btn = document.getElementById("payBtn"); // 🔥 NEW
+    const btn = document.getElementById("payBtn");
 
     if (!token) {
         msg.innerText = "Login required";
@@ -22,7 +22,6 @@ async function pay() {
         return;
     }
 
-    // 🔥 collect members
     const members = [];
 
     const names = document.querySelectorAll(".member-name");
@@ -37,58 +36,128 @@ async function pay() {
         const email = emails[i].value.trim();
 
         if (!name || !reg || !phone || !email) {
-            msg.innerText = `Please fill all details for Member ${i + 1}`;
+            msg.innerText = `Fill details for Member ${i + 1}`;
             msg.style.color = "red";
             return;
         }
 
-        members.push({
-            name,
-            reg_no: reg,
-            phone,
-            email
-        });
+        members.push({ name, reg_no: reg, phone, email });
     }
 
-    // 🔥 PREVENT DOUBLE CLICK
     btn.disabled = true;
     btn.innerText = "Processing...";
 
+    let registrationId = null;
+
     try {
-        const res = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+        // 🟡 STEP 1: CREATE BOOKING
+        const regRes = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`
             },
-            body: JSON.stringify({
-                ticketId,
-                members
-            })
+            body: JSON.stringify({ ticketId, members })
         });
 
-        const data = await res.json();
+        const regData = await regRes.json();
 
-        if (!res.ok) {
-            msg.innerText = data.message;
-            msg.style.color = "red";
+        if (!regRes.ok) throw new Error(regData.message);
 
-            // 🔥 re-enable button
-            btn.disabled = false;
-            btn.innerText = "Pay Now";
-            return;
-        }
+        registrationId = regData.registrationId;
 
-        // ✅ BETTER SUCCESS MESSAGE
-        msg.innerText = "Booking confirmed! Check your email 🎫";
-        msg.style.color = "green";
+        // 🟡 STEP 2: CREATE ORDER
+        const orderRes = await fetch(`http://localhost:5000/api/payment/create-order`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ registrationId })
+        });
 
-        setTimeout(() => {
-            window.location.href = "/public/pages/index.html";
-        }, 2500);
+        const orderData = await orderRes.json();
+
+        if (!orderRes.ok) throw new Error(orderData.message);
+
+        // 🟡 STEP 3: OPEN RAZORPAY
+        const options = {
+            key: orderData.key,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            order_id: orderData.orderId,
+
+            // ✅ SUCCESS HANDLER
+            handler: async function (response) {
+                try {
+                    const verifyRes = await fetch(`http://localhost:5000/api/payment/verify`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            registrationId
+                        })
+                    });
+
+                    const verifyData = await verifyRes.json();
+
+                    if (!verifyRes.ok) throw new Error(verifyData.message);
+
+                    msg.innerText = "Payment successful 🎉";
+                    msg.style.color = "green";
+
+                    setTimeout(() => {
+                        window.location.href = "/public/pages/my-bookings.html";
+                    }, 1500);
+
+                } catch (err) {
+                    console.error("VERIFY ERROR:", err);
+
+                    msg.innerText = "Payment done but verification failed";
+                    msg.style.color = "red";
+                }
+            },
+
+            // 🔴 CRITICAL FIX: DELETE ON CANCEL
+            modal: {
+                ondismiss: async function () {
+
+                    try {
+                        if (registrationId) {
+                            await fetch("http://localhost:5000/api/payment/delete", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${token}`
+                                },
+                                body: JSON.stringify({ registrationId })
+                            });
+                        }
+                    } catch (err) {
+                        console.error("Delete failed:", err);
+                    }
+
+                    msg.innerText = "Payment cancelled";
+                    msg.style.color = "orange";
+
+                    btn.disabled = false;
+                    btn.innerText = "Pay Now";
+                }
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
 
     } catch (err) {
-        msg.innerText = "Error during payment";
+        console.error("ERROR:", err);
+
+        msg.innerText = err.message || "Something went wrong";
         msg.style.color = "red";
 
         btn.disabled = false;

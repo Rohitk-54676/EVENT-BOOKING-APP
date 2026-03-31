@@ -79,6 +79,7 @@ export const getEvents = async (req, res) => {
              COUNT(r.id) AS registered_count
       FROM events e
       LEFT JOIN registrations r ON e.id = r.event_id
+      WHERE e.is_deleted = false
       GROUP BY e.id
       ORDER BY e.date ASC
     `);
@@ -132,162 +133,185 @@ export const registerEvent = async (req, res) => {
       return res.status(400).json({ message: "Member details required" });
     }
 
-    // 🔹 1. check ticket exists
+    // 🔥 START TRANSACTION
+    await client.query("BEGIN");
+
+    // 🔒 LOCK TICKET ROW (prevents race condition)
     const ticketRes = await client.query(
-      "SELECT * FROM event_tickets WHERE id = $1 AND event_id = $2",
+      `SELECT * FROM event_tickets 
+       WHERE id = $1 AND event_id = $2 
+       FOR UPDATE`,
       [ticketId, eventId]
     );
 
     if (ticketRes.rows.length === 0) {
-      return res.status(404).json({ message: "Invalid ticket" });
+      throw new Error("Invalid ticket");
     }
 
     const ticket = ticketRes.rows[0];
 
-    // 🔹 2. check capacity
+    // ✅ TEAM SIZE VALIDATION
+    if (members.length !== ticket.team_size) {
+      throw new Error(`Team must have exactly ${ticket.team_size} members`);
+    }
+
+    // 🔥 CAPACITY CHECK (INSIDE TRANSACTION)
     const countRes = await client.query(
-      "SELECT COUNT(*) FROM registrations WHERE ticket_id = $1",
+      `SELECT COUNT(*) FROM registrations 
+      WHERE ticket_id = $1 
+      AND payment_status IN ('pending', 'paid')
+      AND (expires_at IS NULL OR expires_at > NOW())`,
       [ticketId]
     );
 
-    if (parseInt(countRes.rows[0].count) >= ticket.max_quantity) {
-      return res.status(400).json({ message: "Ticket is full" });
+    const currentCount = parseInt(countRes.rows[0].count);
+
+    if (currentCount >= ticket.max_quantity) {
+      throw new Error("Ticket is full");
     }
 
-    await client.query("BEGIN");
-    // 🔹 3. insert registration
+    // 🔐 GENERATE TICKET CODE
     const ticketCode = uuidv4();
 
+    // 🧾 INSERT REGISTRATION (PAYMENT NOT DONE YET)
     const regRes = await client.query(
-      `INSERT INTO registrations (user_id, event_id, ticket_id, ticket_code)
-   VALUES ($1, $2, $3, $4)
-   RETURNING id, ticket_code`,
+      `INSERT INTO registrations 
+      (user_id, event_id, ticket_id, ticket_code, payment_status, status, expires_at)
+      VALUES ($1, $2, $3, $4, 'pending', 'inactive', NOW() + INTERVAL '10 minutes')
+      RETURNING id, ticket_code`,
       [userId, eventId, ticketId, ticketCode]
     );
 
     const registrationId = regRes.rows[0].id;
 
-    // 🔹 generate QR AFTER insert (clean flow)
-    const savedTicketCode = regRes.rows[0].ticket_code;
-    const qrImage = await QRCode.toDataURL(savedTicketCode);
+    // ⚡ BULK INSERT MEMBERS
+    const values = [];
+    const placeholders = members.map((m, i) => {
+      const idx = i * 5;
+      values.push(registrationId, m.name, m.reg_no, m.phone, m.email);
+      return `($${idx + 1}, $${idx + 2}, $${idx + 3}, $${idx + 4}, $${idx + 5})`;
+    }).join(",");
 
-    // 🔹 4. insert members
-    for (const m of members) {
-      await client.query(
-        `INSERT INTO registration_members 
-     (registration_id, name, reg_no, phone, email)
-     VALUES ($1, $2, $3, $4, $5)`,
-        [registrationId, m.name, m.reg_no, m.phone, m.email]
-      );
-    }
+    await client.query(
+      `INSERT INTO registration_members 
+       (registration_id, name, reg_no, phone, email)
+       VALUES ${placeholders}`,
+      values
+    );
 
+    // ✅ COMMIT
     await client.query("COMMIT");
-    // 🔹 get event details
-    const eventRes = await db.query(
-      "SELECT title, date, location FROM events WHERE id=$1",
-      [eventId]
-    );
 
-    // 🔹 get ticket details
-    const ticketRess = await db.query(
-      "SELECT name FROM event_tickets WHERE id=$1",
-      [ticketId]
-    );
-
-    // 🔹 get user email
-    const userRes = await db.query(
-      "SELECT email FROM users WHERE id=$1",
-      [userId]
-    );
-
-    const event = eventRes.rows[0];
-    const tickett = ticketRess.rows[0];
-    const userEmail = userRes.rows[0].email;
-
-    // 🔥 send email
-    setTimeout(() => {
-      sendTicket({
-        email: userEmail,
-        eventName: event.title,
-        date: event.date,
-        location: event.location,
-        ticketName: ticket.name,
-        qrImage
-      }).catch(err => console.error("Email error:", err));
-    }, 1500);
+    // ⚠️ DO NOT SEND EMAIL / QR YET
+    // Only after payment success
 
     res.json({
-      message: "Registration successful",
-      ticketCode: savedTicketCode,
-      qrImage
+      message: "Booking created. Proceed to payment.",
+      registrationId,
+      ticketCode
     });
 
   } catch (err) {
     await client.query("ROLLBACK");
 
+    console.error(err);
+
+    if (err.message === "Invalid ticket") {
+      return res.status(404).json({ message: err.message });
+    }
+
+    if (err.message.includes("Team must")) {
+      return res.status(400).json({ message: err.message });
+    }
+
+    if (err.message === "Ticket is full") {
+      return res.status(400).json({ message: err.message });
+    }
+
     if (err.code === "23505") {
       return res.status(400).json({ message: "Already booked this ticket" });
     }
 
-    console.error(err);
     res.status(500).json({ message: "Server error" });
 
   } finally {
     client.release();
   }
 };
-// 🔹 GET SINGLE EVENT (DETAIL PAGE)
+
+
 export const getEventById = async (req, res) => {
   try {
     const eventId = req.params.id;
     const userId = req.user?.id || null;
 
-    const result = await db.query(`
-      SELECT e.*, COUNT(r.id) AS registered_count
-      FROM events e
-      LEFT JOIN registrations r ON e.id = r.event_id
-      WHERE e.id = $1
-      GROUP BY e.id
-    `, [eventId]);
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-
-    const event = result.rows[0];
-
-    // 🔥 ADD THIS BLOCK (tickets fetch)
-    const ticketsRes = await db.query(
-      "SELECT * FROM event_tickets WHERE event_id = $1",
+    // 🔹 1. GET EVENT (with soft delete check + correct count)
+    const eventRes = await db.query(
+      `SELECT e.*, 
+              COUNT(r.id) FILTER (
+                WHERE r.payment_status IN ('pending','paid')
+                AND (r.expires_at IS NULL OR r.expires_at > NOW())
+              ) AS registered_count
+       FROM events e
+       LEFT JOIN registrations r ON e.id = r.event_id
+       WHERE e.id = $1 AND e.is_deleted = false
+       GROUP BY e.id`,
       [eventId]
     );
 
-    const tickets = ticketsRes.rows;
+    if (eventRes.rows.length === 0) {
+      return res.status(404).json({ message: "Event not found" });
+    }
 
+    const event = eventRes.rows[0];
+
+    // 🔹 2. GET TICKETS (with correct capacity logic)
+    const ticketsRes = await db.query(
+      `SELECT t.*,
+              COUNT(r.id) FILTER (
+                WHERE r.payment_status IN ('pending','paid')
+                AND (r.expires_at IS NULL OR r.expires_at > NOW())
+              ) AS registered_count
+       FROM event_tickets t
+       LEFT JOIN registrations r ON r.ticket_id = t.id
+       WHERE t.event_id = $1
+       GROUP BY t.id`,
+      [eventId]
+    );
+
+    const tickets = ticketsRes.rows.map(t => ({
+      ...t,
+      isFull: parseInt(t.registered_count) >= t.max_quantity
+    }));
+
+    // 🔹 3. USER TICKETS (ONLY PAID)
     let userTickets = [];
 
     if (userId) {
-      const reg = await db.query(
-        "SELECT ticket_id FROM registrations WHERE user_id = $1 AND event_id = $2",
+      const regRes = await db.query(
+        `SELECT ticket_id 
+         FROM registrations 
+         WHERE user_id = $1 
+         AND event_id = $2
+         AND payment_status = 'paid'`,
         [userId, eventId]
       );
 
-      userTickets = reg.rows.map(r => r.ticket_id);
+      userTickets = regRes.rows.map(r => r.ticket_id);
     }
 
-    // 🔥 MODIFY RESPONSE
+    // 🔹 4. FINAL RESPONSE
     res.json({
       ...event,
       tickets,
-      userTickets // 🔥 IMPORTANT
+      userTickets
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("getEventById error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 // 🔹 GET ADMIN EVENTS
 export const getAdminEvents = async (req, res) => {
@@ -324,7 +348,7 @@ export const getEventRegistrations = async (req, res) => {
       FROM registrations r
       JOIN event_tickets t ON r.ticket_id = t.id
       JOIN registration_members rm ON rm.registration_id = r.id
-      WHERE r.event_id = $1
+      WHERE r.event_id = $1 AND r.payment_status = 'paid'
       ORDER BY t.name
     `, [eventId]);
 
@@ -354,7 +378,7 @@ export const exportEventData = async (req, res) => {
       JOIN events e ON r.event_id = e.id
       JOIN event_tickets t ON r.ticket_id = t.id
       JOIN registration_members rm ON rm.registration_id = r.id
-      WHERE e.id = $1
+      WHERE e.id = $1 AND r.payment_status = 'paid'
       ORDER BY t.name
     `, [eventId]);
 
@@ -435,7 +459,7 @@ export const deleteEventWithOTP = async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" });
     }
 
-    await db.query("DELETE FROM events WHERE id = $1", [eventId]);
+    await db.query("UPDATE events SET is_deleted = true WHERE id = $1", [eventId]);
 
     delete otpStore[adminId];
 
@@ -467,7 +491,7 @@ export const updateEvent = async (req, res) => {
 
     await client.query("BEGIN");
 
-    // 🔹 update event
+    // 🔹 UPDATE EVENT
     await client.query(
       `UPDATE events
        SET title=$1, description=$2, date=$3, location=$4, image_url=$5
@@ -475,18 +499,44 @@ export const updateEvent = async (req, res) => {
       [title, description, date, location, image_url, eventId]
     );
 
-    // 🔹 delete old tickets (safe for now)
-    await client.query(
-      "DELETE FROM event_tickets WHERE event_id=$1",
+    // 🔹 GET EXISTING TICKETS
+    const existingRes = await client.query(
+      "SELECT id FROM event_tickets WHERE event_id=$1",
       [eventId]
     );
 
-    // 🔹 insert new tickets
+    const existingIds = existingRes.rows.map(t => t.id);
+    const incomingIds = tickets.filter(t => t.id).map(t => t.id);
+
+    // 🔹 UPDATE OR INSERT
     for (const t of tickets) {
+      if (t.id) {
+        // ✅ UPDATE EXISTING
+        await client.query(
+          `UPDATE event_tickets
+           SET name=$1, price=$2, max_quantity=$3, team_size=$4
+           WHERE id=$5`,
+          [t.name, t.price, t.max_quantity, t.team_size, t.id]
+        );
+      } else {
+        // ✅ INSERT NEW
+        await client.query(
+          `INSERT INTO event_tickets (event_id, name, price, max_quantity, team_size)
+           VALUES ($1,$2,$3,$4,$5)`,
+          [eventId, t.name, t.price, t.max_quantity, t.team_size]
+        );
+      }
+    }
+
+    // 🔹 SOFT DELETE REMOVED TICKETS
+    const toDeactivate = existingIds.filter(id => !incomingIds.includes(id));
+
+    if (toDeactivate.length > 0) {
       await client.query(
-        `INSERT INTO event_tickets (event_id, name, price, max_quantity, team_size)
-         VALUES ($1,$2,$3,$4,$5)`,
-        [eventId, t.name, t.price, t.max_quantity, t.team_size]
+        `UPDATE event_tickets
+         SET is_active = false
+         WHERE id = ANY($1)`,
+        [toDeactivate]
       );
     }
 
@@ -521,7 +571,7 @@ export const getMyBookings = async (req, res) => {
       FROM registrations r
       JOIN events e ON r.event_id = e.id
       JOIN event_tickets t ON r.ticket_id = t.id
-      WHERE r.user_id = $1
+      WHERE r.user_id = $1 AND r.payment_status = 'paid'
       ORDER BY e.date DESC
     `, [userId]);
 

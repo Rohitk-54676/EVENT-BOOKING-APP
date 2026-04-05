@@ -1,52 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" href="/public/css/auth.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — EventZ</title>
+  <link rel="stylesheet" href="/public/css/auth.css">
 </head>
-
 <body>
 
-    <!-- Branding -->
-    <div class="branding">
-        <h1>EventZ</h1>
-        <p>Join and book amazing events around you</p>
+  <canvas id="particles"></canvas>
+
+  <!-- Branding -->
+  <div class="branding">
+    <div class="brand-logo">
+      <div class="brand-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#060d1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg></div>
+      <h1>EventZ</h1>
+    </div>
+    <div class="brand-divider"></div>
+    <p class="tagline">Welcome back. Your next<br>great experience awaits.</p>
+    <div class="brand-features">
+      <div class="feature-pill">Manage your bookings</div>
+      <div class="feature-pill">Get personalised recommendations</div>
+      <div class="feature-pill">Never miss an event again</div>
+    </div>
+  </div>
+
+  <!-- Form -->
+  <form id="loginForm" class="auth-form" autocomplete="off" novalidate>
+
+    <div class="form-header">
+      <h2>Welcome Back</h2>
+      <p class="form-subtitle">Sign in to continue your journey</p>
     </div>
 
-    <!-- Form -->
-    <form id="loginForm" class="auth-form">
+    <div class="input-group">
+      <span class="input-icon"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
+      <input type="email" id="email" placeholder=" " autocomplete="off" />
+      <label for="email">Email Address</label>
+    </div>
 
-        <h2>Welcome Back</h2>
+    <div class="input-group has-toggle">
+      <span class="input-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+      <input type="password" id="password" placeholder=" " autocomplete="current-password" />
+      <label for="password">Password</label>
+      <button type="button" class="toggle-pass" onclick="togglePass('password', this)" tabindex="-1"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+    </div>
 
-        <div class="input-group">
-            <input type="email" id="email" placeholder=" " />
-            <label>Email</label>
-        </div>
+    <button type="submit" class="btn-primary" id="submitBtn">
+      <span class="btn-text">Sign In →</span>
+      <span class="btn-spinner"></span>
+    </button>
 
-        <div class="input-group">
-            <input type="password" id="password" placeholder=" " />
-            <label>Password</label>
-        </div>
+    <p id="registerLink" class="switch">
+      Don't have an account? <a href="register.html">Create one</a>
+    </p>
 
-        <button type="submit">Login</button>
+    <p id="forgotLink" class="switch" style="display:none;">
+      <a href="forgot.html">Forgot your password?</a>
+    </p>
 
-        <p id="registerLink" class="switch" style="display:block;">
-            Not registered?
-            <a href="register.html">Create account</a>
-        </p>
+    <p id="msg"></p>
 
-        <p id="forgotLink" class="switch" style="display:none;">
-            <a href="forgot.html">Forgot Password?</a>
-        </p>
-        <p id="msg"></p>
+  </form>
 
-    </form>
-
-    <script src="/public/js/login.js"></script>
-
+  <script src="/public/js/particles.js"></script>
+  <script src="/public/js/login.js"></script>
 </body>
-
 </html>

@@ -1,34 +1,448 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Eventify</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventZ — Discover & Book Amazing Events</title>
   <link rel="stylesheet" href="/public/css/main.css">
 </head>
+
 <body>
 
-<!-- 🔹 NAVBAR -->
-<nav class="nav">
-  <h2>Eventify</h2>
-
-  <div id="navButtons"></div>
-</nav>
-
-<!-- 🔹 HERO -->
-<section class="container">
-  <h1>Discover & Book Events</h1>
-  <p>Find sports, tech, and fun events near you.</p>
-</section>
-
-<!-- 🔹 EVENTS -->
-<section class="container">
-  <h2>Upcoming Events</h2>
-
-  <div id="event-list" class="event-grid">
-    <!-- Events will load here -->
+  <!-- ─── BLOBS ─── -->
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
   </div>
-</section>
 
-<script src="/public/js/main.js"></script>
+  <!-- ════════════════════════════════════════
+       NAVBAR
+  ════════════════════════════════════════ -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a class="logo" href="/public/pages/index.html">EventZ</a>
+    </div>
 
+    <nav class="nav-center" id="navCenter">
+      <a href="/public/pages/list-events.html">Events</a>
+      <a href="/public/pages/my-bookings.html">My Bookings</a>
+      <a href="#how-it-works">How It Works</a>
+      <a href="/public/pages/about.html">About</a>
+      <a href="/public/pages/contact.html">Contact</a>
+    </nav>
+
+    <div class="nav-right">
+      <!-- Search -->
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search events…" autocomplete="off" />
+        <div id="searchResults" class="search-results"></div>
+      </div>
+
+      <!-- User area (Login btn or profile avatar) -->
+      <div id="userArea"></div>
+
+      <!-- Hamburger -->
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── MOBILE MENU ─── -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/public/pages/list-events.html">Events</a>
+    <a href="/public/pages/my-bookings.html">My Bookings</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="/public/pages/about.html">About</a>
+    <a href="/public/pages/contact.html">Contact</a>
+    <div class="mobile-auth" id="mobileAuth"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════ -->
+  <section class="hero" id="home">
+    <canvas id="heroCanvas"></canvas>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="dot"></span>
+        India's Most Vibrant Event Platform
+      </div>
+
+      <h1>
+        Discover &amp; Book<br>
+        <span class="line-2">Extraordinary Events</span>
+      </h1>
+
+      <p>From electrifying concerts to intimate workshops — find experiences that move you, right where you are.</p>
+
+      <div class="hero-cta">
+        <button class="btn-hero-primary" onclick="goEventsPage()">
+          🎟️ &nbsp;Explore Events
+        </button>
+        <button onclick="document.getElementById('how-it-works').scrollIntoView({ behavior: 'smooth' })" class="btn-hero-secondary">
+          How It Works ↓
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll-hint">
+      <div class="mouse"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       STATS BAR
+  ════════════════════════════════════════ -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num" data-target="500">0</div>
+        <div class="stat-label">Events Listed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-target="50">0</div>
+        <div class="stat-label">Cities Covered</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-target="12000">0</div>
+        <div class="stat-label">Happy Attendees</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" data-target="98">0</div>
+        <div class="stat-label">% Satisfaction</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       TICKER
+  ════════════════════════════════════════ -->
+  <div class="ticker-wrap">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- items injected by JS -->
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       LATEST EVENTS
+  ════════════════════════════════════════ -->
+  <section class="section" id="events">
+    <div style="max-width:1280px;margin:0 auto;">
+      <div class="section-header-row">
+        <div>
+          <div class="section-tag">Just In</div>
+          <h2 class="section-title">Latest <span
+              style="background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Events</span>
+          </h2>
+          <p class="section-sub">Hand-picked upcoming events you won't want to miss.</p>
+        </div>
+        <button class="btn-view-all" onclick="goEventsPage()">
+          View All Events
+          <svg viewBox="0 0 24 24">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="latest-events" class="event-grid"></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       CITY EXPLORER
+  ════════════════════════════════════════ -->
+  <section class="section" id="cities">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:46px;">
+        <div class="section-tag">Browse by City</div>
+        <h2 class="section-title">Find Events <span
+            style="background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Near
+            You</span></h2>
+        <p class="section-sub" style="margin:0 auto;">Explore what's happening in India's most vibrant cities.</p>
+      </div>
+      <div class="cities-grid" id="citiesGrid"></div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       HOW IT WORKS
+  ════════════════════════════════════════ -->
+  <section class="section steps-section" id="how-it-works">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:50px;">
+        <div class="section-tag">Simple Process</div>
+        <h2 class="section-title">How <span
+            style="background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">It
+            Works</span></h2>
+        <p class="section-sub" style="margin:0 auto;">Book your next event in three easy steps — no fuss, no hassle.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <div class="step-icon">🔍</div>
+          <h3>Discover Events</h3>
+          <p>Browse hundreds of curated events happening near you — concerts, workshops, sports, food festivals and
+            more.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <div class="step-icon">🎟️</div>
+          <h3>Book Instantly</h3>
+          <p>Select your seats, choose tickets, and complete your booking in seconds — fully secure and hassle-free.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <div class="step-icon">🎉</div>
+          <h3>Enjoy the Experience</h3>
+          <p>Show up, scan your ticket, and immerse yourself in an unforgettable live experience. It's that simple.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       WHY EVENTZ
+  ════════════════════════════════════════ -->
+  <section class="section" id="about">
+    <div style="max-width:1200px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:50px;">
+        <div class="section-tag">Why Choose Us</div>
+        <h2 class="section-title">Everything You Need,<br><span
+            style="background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Nothing
+            You Don't</span></h2>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <h4>Instant Booking</h4>
+          <p>Reserve your spot in seconds with our streamlined checkout. No waiting, no complicated forms.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔒</span>
+          <h4>Secure Payments</h4>
+          <p>Your transactions are fully encrypted. Book with confidence knowing your data is always safe.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📱</span>
+          <h4>Mobile-First</h4>
+          <p>Manage your bookings, get reminders, and access your tickets from any device, anywhere.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🎯</span>
+          <h4>Curated Events</h4>
+          <p>Every event is vetted and quality-checked before it goes live. Only the best make it in.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       TESTIMONIALS
+  ════════════════════════════════════════ -->
+  <section class="section testimonials-section">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div style="text-align:center;margin-bottom:50px;">
+        <div class="section-tag">Real Reviews</div>
+        <h2 class="section-title">People <span
+            style="background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Love
+            EventZ</span></h2>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <blockquote>"Found a rooftop concert I had no idea was happening two blocks from my house. Booked in 30
+            seconds. Life changed."</blockquote>
+          <div class="t-author">
+            <div class="t-avatar">A</div>
+            <div>
+              <div class="t-name">Arjun Mehta</div>
+              <div class="t-role">Music Enthusiast, Mumbai</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <blockquote>"The booking experience is so smooth. Got my ticket, got a reminder, showed up, had the best
+            evening. Perfect from start to finish."</blockquote>
+          <div class="t-author">
+            <div class="t-avatar">P</div>
+            <div>
+              <div class="t-name">Priya Sharma</div>
+              <div class="t-role">Tech Professional, Bangalore</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">★★★★★</div>
+          <blockquote>"Organised our company offsite through EventZ. The process was incredibly simple and the event was
+            a massive hit with the whole team."</blockquote>
+          <div class="t-author">
+            <div class="t-avatar">R</div>
+            <div>
+              <div class="t-name">Rahul Gupta</div>
+              <div class="t-role">Product Manager, Delhi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       APP DOWNLOAD
+  ════════════════════════════════════════ -->
+  <section class="section app-section">
+    <div class="app-inner">
+      <div class="app-text">
+        <div class="section-tag">Coming Soon</div>
+        <h2>Take EventZ<br><span
+            style="background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Everywhere
+            You Go</span></h2>
+        <p>Book tickets on the go, get real-time event reminders, and store all your tickets in one place — right from
+          your phone.</p>
+        <div class="app-badges">
+          <a class="app-badge" href="#">
+            <span class="app-badge-icon">🍎</span>
+            <div class="app-badge-text">
+              <span class="small">Download on the</span>
+              <span class="big">App Store</span>
+            </div>
+          </a>
+          <a class="app-badge" href="#">
+            <span class="app-badge-icon">▶</span>
+            <div class="app-badge-text">
+              <span class="small">Get it on</span>
+              <span class="big">Google Play</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="app-visual">
+        <div class="phone-glow phone-glow-1"></div>
+        <div class="phone-glow phone-glow-2"></div>
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-header">EventZ</div>
+            <div class="phone-card">
+              <div class="phone-card-img"></div>
+              <div class="phone-card-body">
+                <div class="phone-card-title">Sunburn Festival 2026</div>
+                <div class="phone-card-meta"><span>📅 Dec 28</span><span>📍 Goa</span></div>
+              </div>
+              <div class="phone-btn">Book Now →</div>
+            </div>
+            <div class="phone-card">
+              <div class="phone-card-img" style="background:linear-gradient(135deg,var(--blue),var(--cyan));"></div>
+              <div class="phone-card-body">
+                <div class="phone-card-title">TechSpark Conference</div>
+                <div class="phone-card-meta"><span>📅 Jan 15</span><span>📍 Bangalore</span></div>
+              </div>
+              <div class="phone-btn">Book Now →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       NEWSLETTER
+  ════════════════════════════════════════ -->
+  <section class="section newsletter-section" id="contact">
+    <div class="newsletter-inner">
+      <div class="section-tag" style="margin-bottom:16px;">Stay in the Loop</div>
+      <h2>Never Miss an <span
+          style="background:linear-gradient(90deg,var(--pink),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Event
+          Again</span></h2>
+      <p>Get early access, exclusive deals, and event alerts delivered straight to your inbox.</p>
+
+      <div class="newsletter-form" id="newsletterForm">
+        <input type="email" id="newsletterEmail" placeholder="Enter your email address…" />
+        <button class="btn-subscribe" onclick="subscribeNewsletter()">Subscribe</button>
+      </div>
+      <p class="newsletter-note">No spam ever. Unsubscribe anytime. 🔒</p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-grid">
+
+      <!-- Brand column -->
+      <div class="footer-brand">
+        <a class="logo" href="/public/pages/index.html">EventZ</a>
+        <p>India's most vibrant event discovery and booking platform. Find your next unforgettable experience.</p>
+        <div class="footer-socials">
+          <a class="social-btn" href="https://www.instagram.com/withonly_rohit_?igsh=aDZsMjAzcHU4b2N0" aria-label="Twitter">𝕏</a>
+          <a class="social-btn" href="https://www.instagram.com/withonly_rohit_?igsh=aDZsMjAzcHU4b2N0" aria-label="Instagram">📸</a>
+          <a class="social-btn" href="https://www.linkedin.com/in/rohitkumar9572?utm_source=share_via&utm_content=profile&utm_medium=member_android" aria-label="LinkedIn">in</a>
+          <a class="social-btn" href="https://www.instagram.com/withonly_rohit_?igsh=aDZsMjAzcHU4b2N0" aria-label="YouTube">▶</a>
+        </div>
+      </div>
+
+      <!-- Explore -->
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="/public/pages/list-events.html">All Events</a></li>
+          <li><a href="/public/pages/my-bookings.html">My Bookings</a></li>
+          <li><a href="#how-it-works">How It Works</a></li>
+          <li><a href="/public/pages/about.html">About Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Account -->
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul>
+          <li><a href="/public/pages/login.html">Login</a></li>
+          <li><a href="/public/pages/register.html">Register</a></li>
+          <li><a href="/public/pages/my-bookings.html">My Tickets</a></li>
+          <li><a href="#">Profile</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div class="footer-col" id="contact-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="/public/pages/contact.html">Help Centre</a></li>
+          <li><a href="#">Cancellation Policy</a></li>
+          <li><a href="/public/pages/contact.html">Contact Us</a></li>
+          <li><a href="#">Report an Issue</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 <b>EventZ</b>. All rights reserved.</p>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─── TOAST ─── -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/public/js/main.js"></script>
 </body>
+
 </html>

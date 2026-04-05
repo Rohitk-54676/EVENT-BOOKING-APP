@@ -5,12 +5,13 @@ import express from "express";
 import authRoutes from "./routes/authRoutes.js";
 import { authMiddleware } from "./middleware/authMiddleware.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import contactRoute from "./routes/contactRoute.js";
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
-
+app.use("/api/contact", contactRoute);
 app.use("/api/payment", paymentRoutes);
 import eventRoutes from "./routes/eventRoutes.js";
 app.use("/api/events", eventRoutes);

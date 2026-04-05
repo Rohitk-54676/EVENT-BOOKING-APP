@@ -1,17 +1,14 @@
 const token = localStorage.getItem("token");
-
 let scanner = null;
 
-// 🔹 VERIFY FUNCTION
+// Verify ticket
 async function verify(codeInput = null) {
   const input = document.getElementById("code");
   const msg = document.getElementById("msg");
-
   const code = codeInput || input.value.trim();
 
   if (!code) {
-    msg.innerText = "Enter ticket code";
-    msg.style.color = "red";
+    showMsg(msg, "Enter ticket code", "error");
     return;
   }
 
@@ -26,35 +23,36 @@ async function verify(codeInput = null) {
     });
 
     const data = await res.json();
+    const type = res.ok ? "success" : "error";
+    showMsg(msg, `${data.message} | ${data.event} (${data.ticket})`, type);
 
-    msg.innerText = `${data.message} | ${data.event} (${data.ticket})`;
-    msg.style.color = res.ok ? "green" : "red";
-
-    // 🔥 Clear input
     input.value = "";
-
-    // 🔥 Auto clear message
-    setTimeout(() => {
-      msg.innerText = "";
-    }, 2000);
-
+    setTimeout(() => clearMsg(msg), 3000);
   } catch (err) {
-    msg.innerText = "Error";
-    msg.style.color = "red";
+    showMsg(msg, "Something went wrong", "error");
   }
 }
 
-// 🔥 ENTER KEY SUPPORT
+// Show styled message
+function showMsg(el, text, type) {
+  el.textContent = text;
+  el.className = "msg-box";
+  el.classList.add(type === "success" ? "msg-success" : type === "warning" ? "msg-warning" : "msg-error");
+}
+
+function clearMsg(el) {
+  el.textContent = "";
+  el.className = "";
+}
+
+// Enter key support
 document.getElementById("code").addEventListener("keypress", function (e) {
-  if (e.key === "Enter") {
-    verify();
-  }
+  if (e.key === "Enter") verify();
 });
 
-// 🔹 START SCANNER
+// Start QR scanner
 function startScanner() {
   const reader = document.getElementById("reader");
-
   reader.style.display = "block";
 
   if (!scanner) {
@@ -63,27 +61,18 @@ function startScanner() {
 
   scanner.start(
     { facingMode: "environment" },
-    {
-      fps: 10,
-      qrbox: 250
-    },
+    { fps: 10, qrbox: 250 },
     (decodedText) => {
-      // 🔥 stop scanner immediately
-      if (scanner) {
-        scanner.stop();
-      }
-
+      if (scanner) scanner.stop();
       verify(decodedText);
     },
-    (error) => {
-      // ignore scan errors
-    }
+    () => {}
   ).catch(err => {
     console.error("Camera error:", err);
   });
 }
 
-// 🔹 STOP SCANNER
+// Stop QR scanner
 function stopScanner() {
   if (scanner) {
     scanner.stop().then(() => {

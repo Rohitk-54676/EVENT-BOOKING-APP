@@ -1,46 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verify OTP</title>
+  <title>Verify OTP — EventZ</title>
   <link rel="stylesheet" href="/public/css/auth.css">
 </head>
-
 <body>
+
+  <canvas id="particles"></canvas>
 
   <!-- Branding -->
   <div class="branding">
-    <h1>EventZ</h1>
-    <p>Join and book amazing events around you</p>
+    <div class="brand-logo">
+      <div class="brand-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#060d1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg></div>
+      <h1>EventZ</h1>
+    </div>
+    <div class="brand-divider"></div>
+    <p class="tagline">One last step to unlock<br>a world of live experiences.</p>
+    <div class="brand-features">
+      <div class="feature-pill">Secure email verification</div>
+      <div class="feature-pill">OTP valid for 10 minutes</div>
+      <div class="feature-pill">Check spam if not received</div>
+    </div>
   </div>
 
   <!-- Form -->
-  <form id="otpForm" class="auth-form">
+  <form id="otpForm" class="auth-form" autocomplete="off" novalidate>
 
-    <h2>Verify OTP</h2>
-    <p class="switch">Enter the 6-digit OTP sent to your email</p>
-
-    <div class="input-group">
-      <input type="text" id="otp" placeholder=" " maxlength="6" />
-      <label>Enter OTP</label>
+    <div class="form-header">
+      <h2>Verify OTP</h2>
+      <p class="form-subtitle" id="emailHint">Enter the 6-digit code sent to your email</p>
     </div>
 
-    <button type="submit">Verify</button>
+    <!-- 6 individual boxes -->
+    <div class="otp-boxes" id="otpBoxes">
+      <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-digit" />
+      <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-digit" />
+      <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-digit" />
+      <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-digit" />
+      <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-digit" />
+      <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="otp-digit" />
+    </div>
 
-    <!-- Dynamic links -->
+    <!-- Hidden combined input for backend -->
+    <input type="hidden" id="otp" />
+
+    <button type="submit" class="btn-primary" id="submitBtn">
+      <span class="btn-text">Verify & Continue →</span>
+      <span class="btn-spinner"></span>
+    </button>
+
     <p id="resendSection" class="switch">
-      Didn't receive OTP?
+      Didn't receive the code?
       <a href="#" id="resendOtp">Resend</a>
+      <span id="resendTimer"></span>
     </p>
+
+    <p class="switch"><a href="register.html">← Back to Register</a></p>
 
     <p id="msg"></p>
 
   </form>
 
+  <script src="/public/js/particles.js"></script>
   <script src="/public/js/verifyotp.js"></script>
-
 </body>
-
 </html>

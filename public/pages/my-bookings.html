@@ -1,15 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Bookings</title>
-  <link rel="stylesheet" href="/public/css/main.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bookings — EventZ</title>
+  <link rel="stylesheet" href="/public/css/my-bookings.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-<h2>My Bookings</h2>
+  <!-- ─── BLOBS ─── -->
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
 
-<div id="booking-list"></div>
+  <!-- ════════════════════════════════════════
+       NAVBAR
+  ════════════════════════════════════════ -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a class="logo" href="/public/pages/index.html">EventZ</a>
+    </div>
 
-<script src="/public/js/my-bookings.js"></script>
+    <nav class="nav-center" id="navCenter">
+      <a href="/public/pages/index.html">Home</a>
+      <a href="/public/pages/list-events.html">Events</a>
+      <a href="/public/pages/my-bookings.html" class="active">My Bookings</a>
+      <a href="/public/pages/about.html">About</a>
+      <a href="/public/pages/contact.html">Contact</a>
+    </nav>
+
+    <div class="nav-right">
+      <div id="userArea"></div>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── MOBILE MENU ─── -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/public/pages/index.html">Home</a>
+    <a href="/public/pages/list-events.html">Events</a>
+    <a href="/public/pages/my-bookings.html" class="active">My Bookings</a>
+    <a href="/public/pages/about.html">About</a>
+    <a href="/public/pages/contact.html">Contact</a>
+    <div class="mobile-auth" id="mobileAuth"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       PAGE HERO
+  ════════════════════════════════════════ -->
+  <section class="page-hero">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      Your Ticket Collection
+    </div>
+    <h1>My <span class="grad-text">Bookings</span></h1>
+    <p>All your event tickets in one place — flip any card to reveal your QR code.</p>
+  </section>
+
+  <!-- ════════════════════════════════════════
+       STATS ROW
+  ════════════════════════════════════════ -->
+  <div class="booking-stats" id="bookingStats" style="display:none;">
+    <div class="bstat">
+      <div class="bstat-num" id="statTotal">0</div>
+      <div class="bstat-label">Total Bookings</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-num active-col" id="statActive">0</div>
+      <div class="bstat-label">Active</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-num used-col" id="statUsed">0</div>
+      <div class="bstat-label">Used</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-num cancelled-col" id="statCancelled">0</div>
+      <div class="bstat-label">Cancelled</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       FILTER TABS
+  ════════════════════════════════════════ -->
+  <div class="filter-row" id="filterRow" style="display:none;">
+    <button class="ftab active" data-filter="all">All</button>
+    <button class="ftab" data-filter="active">✅ Active</button>
+    <button class="ftab" data-filter="used">🎟️ Used</button>
+    <button class="ftab" data-filter="cancelled">❌ Cancelled</button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       BOOKINGS CONTENT
+  ════════════════════════════════════════ -->
+  <main class="container">
+    <div id="booking-list"></div>
+  </main>
+
+  <!-- ════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════ -->
+  <footer class="footer">
+    <p>© 2026 <b>EventZ</b>. All rights reserved.</p>
+  </footer>
+
+  <script src="/public/js/my-bookings.js"></script>
 </body>
 </html>

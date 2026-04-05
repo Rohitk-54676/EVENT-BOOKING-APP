@@ -1,89 +1,72 @@
 const form = document.getElementById("forgotForm");
-const msg = document.getElementById("msg");
-const button = form.querySelector("button");
+const msg  = document.getElementById("msg");
+const btn  = document.getElementById("submitBtn");
 
 const API_URL = "http://localhost:5000/api/auth";
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   clearUI();
 
   const email = getValue("email");
 
-  // 🔥 VALIDATION
-  if (!validateEmail(email)) {
-    return showError("Enter a valid email", "email");
-  }
+  if (!validateEmail(email)) return showError("Enter a valid email", "email");
 
-  button.disabled = true;
-  button.innerText = "Sending...";
+  setLoading(true);
 
   try {
-    const res = await fetch(`${API_URL}/forgot-password`, {
+    const res  = await fetch(`${API_URL}/forgot-password`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
-
     const data = await res.json();
 
     if (!res.ok) {
-      showMessage(data.message || "Something went wrong", "#f87171");
-      resetButton();
+      showMessage(data.message || "Something went wrong", "var(--error)");
+      setLoading(false);
       return;
     }
 
-    // store email for next step
     localStorage.setItem("resetEmail", email);
-
-    showMessage("OTP sent! Redirecting...", "#34d399");
-
-    setTimeout(() => {
-      window.location.href = "reset-password.html";
-    }, 1000);
+    showMessage("OTP sent! Redirecting…", "var(--success)");
+    setTimeout(() => { window.location.href = "reset-password.html"; }, 1000);
 
   } catch (err) {
     console.error(err);
-    showMessage("Server error. Try again.", "#f87171");
-    resetButton();
+    showMessage("Server error. Try again.", "var(--error)");
+    setLoading(false);
   }
 });
 
-/* ---------- HELPERS ---------- */
-
-function getValue(id) {
-  return document.getElementById(id).value.trim();
-}
+/* ── Helpers ── */
+function getValue(id) { return document.getElementById(id).value.trim(); }
 
 function showError(message, fieldId) {
-  showMessage(message, "#f87171");
-
-  const input = document.getElementById(fieldId);
-  input.style.border = "1px solid #f87171";
-
+  showMessage(message, "var(--error)");
+  const grp = document.getElementById(fieldId).closest(".input-group");
+  grp.classList.add("shake");
+  document.getElementById(fieldId).style.borderColor = "var(--error)";
   setTimeout(() => {
-    input.style.border = "";
+    grp.classList.remove("shake");
+    document.getElementById(fieldId).style.borderColor = "";
   }, 2000);
-
-  resetButton();
+  setLoading(false);
 }
 
 function showMessage(text, color) {
-  msg.innerText = text;
+  msg.textContent = text;
   msg.style.color = color;
 }
 
-function resetButton() {
-  button.disabled = false;
-  button.innerText = "Send OTP";
+function setLoading(state) {
+  btn.disabled = state;
+  btn.classList.toggle("loading", state);
 }
 
 function clearUI() {
-  msg.innerText = "";
-  document.getElementById("email").style.border = "";
+  msg.textContent = "";
+  document.getElementById("email").style.borderColor = "";
 }
 
 function validateEmail(email) {

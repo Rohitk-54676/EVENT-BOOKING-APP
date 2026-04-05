@@ -4,39 +4,57 @@ let editEventId = null;
 const form = document.getElementById("eventForm");
 const msg = document.getElementById("msg");
 const ticketsContainer = document.getElementById("ticketsContainer");
+const formTitle = document.getElementById("formTitle");
+const editBadge = document.getElementById("editBadge");
+const submitBtn = document.getElementById("submitBtn");
+const cancelEditBtn = document.getElementById("cancelEditBtn");
 
-// 🔹 Add Ticket Row
-function addTicket() {
+function addTicket(data) {
   const div = document.createElement("div");
   div.classList.add("ticket-row");
 
+  const id = data ? data.id : "";
+  const name = data ? data.name : "";
+  const price = data ? data.price : "";
+  const max = data ? data.max_quantity : "";
+  const team = data ? data.team_size : 1;
+  const disabled = data ? true : false;
+
   div.innerHTML = `
-    <input type="hidden" class="t-id" value="" />   <!-- 🔥 IMPORTANT -->
-
-    <input type="text" placeholder="Ticket Name" class="t-name" required />
-    <input type="number" placeholder="Price" class="t-price" required />
-    <input type="number" placeholder="Max Seats" class="t-max" required />
-    <input type="number" placeholder="Team Size" class="t-team" value="1" />
-
-    <button type="button" onclick="this.parentElement.remove()">Remove</button>
-    <br><br>
+    <input type="hidden" class="t-id" value="${id}" />
+    <input type="text" placeholder="Ticket Name" class="t-name" value="${name}" required />
+    <input type="number" placeholder="Price" class="t-price" value="${price}" required />
+    <input type="number" placeholder="Max Seats" class="t-max" value="${max}" required />
+    <input type="number" placeholder="Team Size" class="t-team" value="${team}" />
+    <button type="button" class="remove-ticket-btn" ${disabled ? 'disabled' : ''} onclick="this.parentElement.remove()">
+      <i class="fas fa-trash"></i>
+    </button>
   `;
 
   ticketsContainer.appendChild(div);
 }
 
-// 🔹 Default row
 addTicket();
 
-// 🔹 SUBMIT FORM
+function cancelEdit() {
+  editMode = false;
+  editEventId = null;
+  form.reset();
+  ticketsContainer.innerHTML = "";
+  addTicket();
+  formTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Create Event';
+  editBadge.classList.add("hidden");
+  submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Create Event';
+  cancelEditBtn.classList.add("hidden");
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   const token = localStorage.getItem("token");
 
   if (!token) {
     msg.innerText = "Not authorized";
-    msg.style.color = "red";
+    msg.className = "form-msg error";
     return;
   }
 
@@ -45,7 +63,6 @@ form.addEventListener("submit", async (e) => {
 
   ticketRows.forEach(row => {
     const id = row.querySelector(".t-id")?.value;
-
     const name = row.querySelector(".t-name").value;
     const price = row.querySelector(".t-price").value;
     const max = row.querySelector(".t-max").value;
@@ -53,7 +70,7 @@ form.addEventListener("submit", async (e) => {
 
     if (name && price && max) {
       tickets.push({
-        id: id ? Number(id) : null,   // 🔥 CRITICAL FIX
+        id: id ? Number(id) : null,
         name,
         price: Number(price),
         max_quantity: Number(max),
@@ -64,7 +81,7 @@ form.addEventListener("submit", async (e) => {
 
   if (tickets.length === 0) {
     msg.innerText = "Add at least one ticket";
-    msg.style.color = "red";
+    msg.className = "form-msg error";
     return;
   }
 
@@ -97,96 +114,113 @@ form.addEventListener("submit", async (e) => {
 
     if (!res.ok) {
       msg.innerText = data.message;
-      msg.style.color = "red";
+      msg.className = "form-msg error";
       return;
     }
 
-    msg.innerText = editMode ? "Event updated successfully" : "Event created successfully";
-    msg.style.color = "green";
+    msg.innerText = editMode ? "✅ Event updated successfully" : "✅ Event created successfully";
+    msg.className = "form-msg success";
 
-    form.reset();
-    ticketsContainer.innerHTML = "";
-    addTicket();
-
-    editMode = false;
-    editEventId = null;
-
+    cancelEdit();
     loadAdminEvents();
-
   } catch (err) {
     msg.innerText = "Server error";
-    msg.style.color = "red";
+    msg.className = "form-msg error";
   }
 });
 
-// 🔹 LOAD ADMIN EVENTS
 async function loadAdminEvents() {
   const token = localStorage.getItem("token");
-
-  const res = await fetch("http://localhost:5000/api/events/admin/events", {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  const events = await res.json();
-
   const container = document.getElementById("adminEvents");
-  container.innerHTML = "";
 
-  events.forEach(event => {
-    const div = document.createElement("div");
-    div.classList.add("admin-card");
+  container.innerHTML = `
+    <div class="loading-state">
+      <i class="fas fa-spinner"></i>
+      <p>Loading events...</p>
+    </div>
+  `;
 
-    div.innerHTML = `
-      <img src="${event.image_url || 'https://via.placeholder.com/200'}" width="200"/>
+  try {
+    const res = await fetch("http://localhost:5000/api/events/admin/events", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-      <h3>${event.title}</h3>
-      <p>${new Date(event.date).toLocaleDateString()}</p>
+    const events = await res.json();
+    container.innerHTML = "";
 
-      <button class="edit-btn" onclick="editEvent(${event.id})">Edit</button>
-      <button class="delete-btn" onclick="startDelete(${event.id})">Delete</button>
-      <button onclick="viewRegistrations(${event.id})">View Registrations</button>
-      <button onclick="downloadExcel(${event.id})">Download Excel</button>
-
-      <p class="status-text"></p>
-
-      <div id="otp-${event.id}" style="display:none; margin-top:10px;">
-        <input type="text" id="otpInput-${event.id}" placeholder="Enter OTP" />
-        <button onclick="confirmDelete(${event.id})">Confirm</button>
-        <button onclick="cancelDelete(${event.id})">Cancel</button>
-      </div>
-
-      <hr>
-    `;
-
-    const editBtn = div.querySelector(".edit-btn");
-    const deleteBtn = div.querySelector(".delete-btn");
-    const statusText = div.querySelector(".status-text");
-
-    if (event.is_deleted) {
-      editBtn.disabled = true;
-      deleteBtn.disabled = true;
-
-      statusText.innerText = "Event Deleted ❌";
-      statusText.style.color = "red";
+    if (events.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-calendar-plus"></i>
+          <p>No events yet. Create your first event above!</p>
+        </div>
+      `;
+      return;
     }
 
-    container.appendChild(div);
-  });
+    events.forEach((event, i) => {
+      const div = document.createElement("div");
+      div.classList.add("admin-card");
+      if (event.is_deleted) div.classList.add("deleted");
+      div.style.animationDelay = `${i * 0.1}s`;
+
+      const imgSrc = event.image_url || "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400";
+
+      div.innerHTML = `
+        <div class="card-image-wrapper">
+          <img src="${imgSrc}" class="card-image" alt="${event.title}" />
+          <div class="card-image-overlay"></div>
+        </div>
+        <div class="card-body">
+          <h3>${event.title}</h3>
+          <div class="card-meta">
+            <span><i class="fas fa-calendar"></i>${new Date(event.date).toLocaleDateString()}</span>
+            <span><i class="fas fa-map-marker-alt"></i>${event.location || 'TBD'}</span>
+          </div>
+          <span class="card-status ${event.is_deleted ? 'deleted-status' : 'active'}">
+            ${event.is_deleted ? '❌ Deleted' : '✅ Active'}
+          </span>
+          <div class="card-actions">
+            <button class="btn-edit" onclick="editEvent(${event.id})" ${event.is_deleted ? 'disabled' : ''}>
+              <i class="fas fa-pen"></i> Edit
+            </button>
+            <button class="btn-delete" onclick="startDelete(${event.id})" ${event.is_deleted ? 'disabled' : ''}>
+              <i class="fas fa-trash"></i> Delete
+            </button>
+            <button class="btn-view" onclick="viewRegistrations(${event.id})">
+              <i class="fas fa-users"></i> Registrations
+            </button>
+            <button class="btn-download" onclick="downloadExcel(${event.id})">
+              <i class="fas fa-file-excel"></i> Export
+            </button>
+          </div>
+          <div id="otp-${event.id}" class="otp-section" style="display:none;">
+            <input type="text" id="otpInput-${event.id}" placeholder="Enter OTP" />
+            <button class="otp-confirm" onclick="confirmDelete(${event.id})">Confirm</button>
+            <button class="otp-cancel" onclick="cancelDelete(${event.id})">Cancel</button>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(div);
+    });
+  } catch (err) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Error loading events</p>
+      </div>
+    `;
+  }
 }
+
 loadAdminEvents();
 
-// 🔹 EDIT EVENT
 async function editEvent(id) {
   const token = localStorage.getItem("token");
-
   const res = await fetch(`http://localhost:5000/api/events/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
+    headers: { Authorization: `Bearer ${token}` }
   });
-
   const event = await res.json();
 
   editMode = true;
@@ -198,41 +232,24 @@ async function editEvent(id) {
   document.getElementById("location").value = event.location;
   document.getElementById("image").value = event.image_url || "";
 
-  const container = document.getElementById("ticketsContainer");
-  container.innerHTML = "";
+  ticketsContainer.innerHTML = "";
+  event.tickets.forEach(t => addTicket(t));
 
-  event.tickets.forEach(t => {
-    const div = document.createElement("div");
-    div.classList.add("ticket-row");
+  formTitle.innerHTML = '<i class="fas fa-pen"></i> Edit Event';
+  editBadge.classList.remove("hidden");
+  submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Event';
+  cancelEditBtn.classList.remove("hidden");
 
-    div.innerHTML = `
-      <input type="hidden" class="t-id" value="${t.id}" />
-
-      <input type="text" class="t-name" value="${t.name}" />
-      <input type="number" class="t-price" value="${t.price}" />
-      <input type="number" class="t-max" value="${t.max_quantity}" />
-      <input type="number" class="t-team" value="${t.team_size}" />
-
-      <button type="button" disabled style="opacity:0.5;">Cannot Remove</button>
-      <br><br>
-    `;
-
-    container.appendChild(div);
-  });
-
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-// 🔹 DELETE FLOW
 async function startDelete(id) {
   const token = localStorage.getItem("token");
-
   await fetch(`http://localhost:5000/api/events/${id}/send-delete-otp`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` }
   });
-
-  document.getElementById(`otp-${id}`).style.display = "block";
+  document.getElementById(`otp-${id}`).style.display = "flex";
 }
 
 async function confirmDelete(id) {
@@ -250,7 +267,6 @@ async function confirmDelete(id) {
 
   const data = await res.json();
   alert(data.message);
-
   if (res.ok) loadAdminEvents();
 }
 
@@ -258,26 +274,21 @@ function cancelDelete(id) {
   document.getElementById(`otp-${id}`).style.display = "none";
 }
 
-// 🔹 NAVIGATION
 function viewRegistrations(id) {
   window.location.href = `/public/pages/registrations.html?id=${id}`;
 }
 
 async function downloadExcel(id) {
   const token = localStorage.getItem("token");
-
   const res = await fetch(`http://localhost:5000/api/events/${id}/export`, {
     headers: { Authorization: `Bearer ${token}` }
   });
-
   const blob = await res.blob();
   const url = window.URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = `event-${id}.xlsx`;
   a.click();
-
   window.URL.revokeObjectURL(url);
 }
 

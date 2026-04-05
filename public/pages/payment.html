@@ -1,20 +1,193 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Payment</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment — EventZ</title>
+  <link rel="stylesheet" href="/public/css/payment.css">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-    <h2>Payment Page</h2>
-    <p id="eventInfo"></p>
-    <h3>Enter Member Details</h3>
-    <div id="membersContainer"></div>
-    <button id="payBtn" onclick="pay()">Pay Now</button>
-    <p id="msg"></p>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="/public/js/payment.js"></script>
-</body>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
 
+  <!-- ── NAVBAR ── -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a class="logo" href="/public/pages/index.html">EventZ</a>
+    </div>
+    <nav class="nav-center" id="navCenter">
+      <a href="/public/pages/index.html">Home</a>
+      <a href="/public/pages/list-events.html">Events</a>
+      <a href="/public/pages/my-bookings.html">My Bookings</a>
+    </nav>
+    <div class="nav-right">
+      <div id="userArea"></div>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/public/pages/index.html">Home</a>
+    <a href="/public/pages/list-events.html">Events</a>
+    <a href="/public/pages/my-bookings.html">My Bookings</a>
+    <div class="mobile-auth" id="mobileAuth"></div>
+  </div>
+
+  <!-- ── PAGE HERO ── -->
+  <section class="page-hero">
+    <div class="hero-eyebrow"><span class="dot"></span>Secure Checkout</div>
+    <h1>Complete Your <span class="grad-text">Booking</span></h1>
+    <p>You're one step away from an unforgettable experience.</p>
+  </section>
+
+  <!-- ── STEPS BAR ── -->
+  <div class="steps-bar">
+    <div class="step done">
+      <div class="step-circle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <span>Select Ticket</span>
+    </div>
+    <div class="step-line done"></div>
+    <div class="step active">
+      <div class="step-circle">2</div>
+      <span>Enter Details</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-circle">3</div>
+      <span>Payment</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-circle">4</div>
+      <span>Confirmation</span>
+    </div>
+  </div>
+
+  <!-- ── MAIN LAYOUT ── -->
+  <div class="payment-layout" id="paymentLayout">
+
+    <!-- LEFT: Member Forms -->
+    <div class="members-panel">
+      <div class="panel-header">
+        <div class="panel-title-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <h2>Member Details</h2>
+          <p id="memberSubtitle">Fill in details for all team members</p>
+        </div>
+      </div>
+
+      <!-- Loading skeleton -->
+      <div id="membersLoading" class="members-loading">
+        <div class="skel-member"></div>
+        <div class="skel-member"></div>
+      </div>
+
+      <!-- Member forms injected here -->
+      <div id="membersContainer"></div>
+
+      <p id="msg" class="pay-msg"></p>
+
+      <button id="payBtn" class="btn-pay" onclick="pay()">
+        <span class="btn-text">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Pay Now
+        </span>
+        <span class="btn-spinner"></span>
+      </button>
+
+      <!-- Trust row -->
+      <div class="trust-row">
+        <span class="trust-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          256-bit SSL Secured
+        </span>
+        <span class="trust-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Powered by Razorpay
+        </span>
+        <span class="trust-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Instant Confirmation
+        </span>
+      </div>
+    </div>
+
+    <!-- RIGHT: Order Summary -->
+    <div class="summary-panel">
+      <div class="summary-inner" id="summaryInner">
+
+        <!-- Loading state -->
+        <div id="summaryLoading" class="summary-loading">
+          <div class="skel-line wide"></div>
+          <div class="skel-line"></div>
+          <div class="skel-line short"></div>
+        </div>
+
+        <!-- Populated by JS -->
+        <div id="summaryContent" style="display:none;">
+          <div class="summary-img-wrap">
+            <img id="summaryImg" src="" alt="" />
+            <div class="summary-img-overlay"></div>
+          </div>
+          <div class="summary-body">
+            <h3 id="summaryTitle"></h3>
+            <div class="summary-meta">
+              <span class="smeta" id="summaryDate">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span></span>
+              </span>
+              <span class="smeta" id="summaryLocation">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span></span>
+              </span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row">
+              <span class="srow-label">Ticket Type</span>
+              <span class="srow-value" id="summaryTicketName"></span>
+            </div>
+            <div class="summary-row">
+              <span class="srow-label">Team Size</span>
+              <span class="srow-value" id="summaryTeamSize"></span>
+            </div>
+            <div class="summary-row">
+              <span class="srow-label">Price per ticket</span>
+              <span class="srow-value" id="summaryPrice"></span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row total-row">
+              <span class="srow-label">Total Amount</span>
+              <span class="srow-value total-value" id="summaryTotal"></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /payment-layout -->
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <p>© 2026 <b>EventZ</b>. All rights reserved.</p>
+  </footer>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="/public/js/payment.js"></script>
+</body>
 </html>

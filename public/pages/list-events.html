@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Events — EventZ</title>
+  <link rel="stylesheet" href="/public/css/event-lists.css">
+</head>
+<body>
+
+  <!-- ─── BACKGROUND BLOBS ─── -->
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+  </div>
+
+  <!-- ─── NAVBAR ─── -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a class="logo" href="/public/pages/index.html">EventZ</a>
+    </div>
+
+    <nav class="nav-center" id="navCenter">
+      <a href="/public/pages/index.html">Home</a>
+      <a href="/public/pages/list-events.html" class="active">Events</a>
+      <a href="/public/pages/my-bookings.html">My Bookings</a>
+      <a href="/public/pages/about.html">About</a>
+      <a href="/public/pages/contact.html">Contact</a>
+    </nav>
+
+    <div class="nav-right">
+      <div id="userArea"></div>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── MOBILE MENU ─── -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/public/pages/index.html">Home</a>
+    <a href="/public/pages/list-events.html" class="active">Events</a>
+    <a href="/public/pages/my-bookings.html">My Bookings</a>
+    <a href="/public/pages/about.html">About</a>
+    <a href="/public/pages/contact.html">Contact</a>
+    <div class="mobile-auth" id="mobileAuth"></div>
+  </div>
+
+  <!-- ─── HERO ─── -->
+  <section class="page-hero">
+    <div class="hero-eyebrow">
+      <span class="dot"></span>
+      Live Now &amp; Upcoming
+    </div>
+    <h1>Discover <span class="grad-text">Amazing</span><br>Events Near You</h1>
+    <p>From concerts to conferences — find and book unforgettable experiences happening around you.</p>
+
+    <div class="search-wrap">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search events, artists, venues…" />
+        <button class="btn-search" onclick="applySearch()">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EVENTS LIST ─── -->
+  <main class="container">
+    <div class="section-bar">
+      <h2>All <span class="grad-text">Events</span></h2>
+      <span class="event-count-badge" id="eventCount">Loading…</span>
+    </div>
+
+    <div id="all-events" class="event-grid"></div>
+  </main>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="footer">
+    <p>© 2026 <b>EventZ</b>. All rights reserved. Made with ♥ for event lovers.</p>
+  </footer>
+
+  <!-- ─── TOAST ─── -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/public/js/list-events.js"></script>
+</body>
+</html>

@@ -1,12 +1,12 @@
 import pkg from "pg";
+import "dotenv/config";
 const { Pool } = pkg;
 
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "eventapp",
-  password: "3273",
-  port: 1024,   // IMPORTANT (your custom port)
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 pool.connect()

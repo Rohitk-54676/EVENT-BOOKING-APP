@@ -42,11 +42,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!token) {
     area.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled">Register</a>`;
+      <a href="/pages/login.html"    class="btn-nav">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled">Register</a>`;
     if (mobileAuth) mobileAuth.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>`;
+      <a href="/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>`;
   } else {
     let user = null;
     try { user = JSON.parse(atob(token.split(".")[1])); } catch {}
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  window.location.href = "/public/pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 /* ══════════════════════════════════════════
@@ -69,7 +69,7 @@ function logout() {
 ══════════════════════════════════════════ */
 async function loadTicketDetails() {
   try {
-    const res   = await fetch(`http://localhost:5000/api/events/${eventId}`);
+    const res   = await fetch(`/api/events/${eventId}`);
     const event = await res.json();
 
     const ticket = event.tickets.find(t => t.id === ticketId);
@@ -306,7 +306,7 @@ async function bookFree() {
 
   try {
     // STEP 1: Create booking (same endpoint as paid)
-    const regRes = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+    const regRes = await fetch(`/api/events/${eventId}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -321,7 +321,7 @@ async function bookFree() {
     registrationId = regData.registrationId;
 
     // STEP 2: Confirm free booking (no Razorpay needed)
-    const confirmRes = await fetch(`http://localhost:5000/api/payment/free-booking`, {
+    const confirmRes = await fetch(`/api/payment/free-booking`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -339,7 +339,7 @@ async function bookFree() {
     if (btn) { btn.disabled = true; btn.style.opacity = "0.6"; }
 
     setTimeout(() => {
-      window.location.href = "/public/pages/my-bookings.html";
+      window.location.href = "/pages/my-bookings.html";
     }, 2000);
 
   } catch (err) {
@@ -349,7 +349,7 @@ async function bookFree() {
     // so user can try again without duplicate key error
     if (registrationId) {
       try {
-        await fetch("http://localhost:5000/api/payment/delete", {
+        await fetch("/api/payment/delete", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -391,7 +391,7 @@ async function pay() {
 
   try {
     // 🟡 STEP 1: CREATE BOOKING
-    const regRes = await fetch(`http://localhost:5000/api/events/${eventId}/register`, {
+    const regRes = await fetch(`/api/events/${eventId}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -406,7 +406,7 @@ async function pay() {
     registrationId = regData.registrationId;
 
     // 🟡 STEP 2: CREATE ORDER
-    const orderRes = await fetch(`http://localhost:5000/api/payment/create-order`, {
+    const orderRes = await fetch(`/api/payment/create-order`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -422,7 +422,7 @@ async function pay() {
       // This prevents the duplicate key error on retry
       if (registrationId) {
         try {
-          await fetch("http://localhost:5000/api/payment/delete", {
+          await fetch("/api/payment/delete", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -447,7 +447,7 @@ async function pay() {
       // ✅ SUCCESS HANDLER — YOUR ORIGINAL
       handler: async function (response) {
         try {
-          const verifyRes = await fetch(`http://localhost:5000/api/payment/verify`, {
+          const verifyRes = await fetch(`/api/payment/verify`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -466,7 +466,7 @@ async function pay() {
 
           showMsg("Payment successful! Redirecting… 🎉", "success");
           setTimeout(() => {
-            window.location.href = "/public/pages/my-bookings.html";
+            window.location.href = "/pages/my-bookings.html";
           }, 1500);
 
         } catch (err) {
@@ -481,7 +481,7 @@ async function pay() {
         ondismiss: async function () {
           try {
             if (registrationId) {
-              await fetch("http://localhost:5000/api/payment/delete", {
+              await fetch("/api/payment/delete", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

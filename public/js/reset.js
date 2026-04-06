@@ -4,7 +4,7 @@ const btn    = document.getElementById("submitBtn");
 const boxes  = Array.from(document.querySelectorAll(".otp-digit"));
 const hidden = document.getElementById("otp");
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "/api/auth";
 
 /* ── Show masked email hint ── */
 (function showEmailHint() {

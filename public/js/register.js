@@ -2,7 +2,7 @@ const form    = document.getElementById("registerForm");
 const msg     = document.getElementById("msg");
 const btn     = document.getElementById("submitBtn");
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "/api/auth";
 
 /* ── Password strength meter ── */
 document.getElementById("password").addEventListener("input", function () {

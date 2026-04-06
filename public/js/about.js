@@ -25,11 +25,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!token) {
     area.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled">Register</a>`;
+      <a href="/pages/login.html"    class="btn-nav">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled">Register</a>`;
     mobileAuth.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>`;
+      <a href="/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>`;
   } else {
     let user = null;
     try { user = JSON.parse(atob(token.split(".")[1])); } catch {}

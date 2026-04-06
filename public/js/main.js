@@ -52,12 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!user) {
       // Not logged in
       userArea.innerHTML = `
-        <a href="/public/pages/login.html"    class="btn-nav">Login</a>
-        <a href="/public/pages/register.html" class="btn-nav filled">Register</a>
+        <a href="/pages/login.html"    class="btn-nav">Login</a>
+        <a href="/pages/register.html" class="btn-nav filled">Register</a>
       `;
       if (mobileAuth) mobileAuth.innerHTML = `
-        <a href="/public/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
-        <a href="/public/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
+        <a href="/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
+        <a href="/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
       `;
     } else {
       // Logged in — avatar with dropdown
@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showSkeletons();
 
     try {
-      const res    = await fetch("http://localhost:5000/api/events");
+      const res    = await fetch("/api/events");
       const events = await res.json();
 
       eventsData = events;
@@ -448,11 +448,11 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ══════════════════════════════════════════
      GLOBAL NAVIGATORS (your original functions)
   ══════════════════════════════════════════ */
-  window.goLogin      = () => window.location.href = "/public/pages/login.html";
-  window.goBookings   = () => window.location.href = "/public/pages/my-bookings.html";
-  window.goAdmin      = () => window.location.href = "/public/pages/admin.html";
-  window.goEventsPage = () => window.location.href = "/public/pages/list-events.html";
-  window.viewEvent    = (id) => window.location.href = `/public/pages/event.html?id=${id}`;
+  window.goLogin      = () => window.location.href = "/pages/login.html";
+  window.goBookings   = () => window.location.href = "/pages/my-bookings.html";
+  window.goAdmin      = () => window.location.href = "/pages/admin.html";
+  window.goEventsPage = () => window.location.href = "/pages/list-events.html";
+  window.viewEvent    = (id) => window.location.href = `/pages/event.html?id=${id}`;
 
   window.logout = () => {
     localStorage.removeItem("token");
@@ -521,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   window.searchCity = (city) => {
-    window.location.href = `/public/pages/list-events.html?city=${encodeURIComponent(city)}`;
+    window.location.href = `/pages/list-events.html?city=${encodeURIComponent(city)}`;
   };
 
 });

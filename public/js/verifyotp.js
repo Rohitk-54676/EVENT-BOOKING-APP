@@ -6,7 +6,7 @@ const timerEl   = document.getElementById("resendTimer");
 const boxes     = Array.from(document.querySelectorAll(".otp-digit"));
 const hiddenOtp = document.getElementById("otp");
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "/api/auth";
 
 /* ── Show masked email ── */
 (function showEmailHint() {

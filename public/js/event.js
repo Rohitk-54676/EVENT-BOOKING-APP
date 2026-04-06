@@ -45,12 +45,12 @@ function initUserArea() {
 
   if (!token) {
     area.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled">Register</a>
+      <a href="/pages/login.html"    class="btn-nav">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled">Register</a>
     `;
     if (mobileAuth) mobileAuth.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
+      <a href="/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
     `;
     return;
   }
@@ -70,7 +70,7 @@ function initUserArea() {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  window.location.href = "/public/pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 /* ══════════════════════════════════════════
@@ -81,7 +81,7 @@ async function loadEvent() {
     const options = {};
     if (token) options.headers = { Authorization: `Bearer ${token}` };
 
-    const res = await fetch(`http://localhost:5000/api/events/${eventId}`, options);
+    const res = await fetch(`/api/events/${eventId}`, options);
 
     if (!res.ok) {
       loadingEl.style.display = "none";
@@ -196,11 +196,11 @@ function handleContinue() {
 
   if (!token) {
     showMsg("Login required — redirecting…", "error");
-    setTimeout(() => { window.location.href = "/public/pages/login.html"; }, 1500);
+    setTimeout(() => { window.location.href = "/pages/login.html"; }, 1500);
     return;
   }
 
-  window.location.href = `/public/pages/payment.html?id=${eventId}&ticket=${selectedTicket}`;
+  window.location.href = `/pages/payment.html?id=${eventId}&ticket=${selectedTicket}`;
 }
 
 /* ══════════════════════════════════════════

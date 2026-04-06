@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  window.location.href = "/public/pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 /* ════════════════════════════════════════
@@ -40,7 +40,7 @@ async function verify(codeInput = null) {
   }
 
   try {
-    const res  = await fetch("http://localhost:5000/api/events/verify-ticket", {
+    const res  = await fetch("/api/events/verify-ticket", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

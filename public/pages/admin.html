@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel — EventZ</title>
-  <link rel="stylesheet" href="/public/css/admin.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
@@ -19,15 +19,15 @@
   <!-- NAVBAR -->
   <header class="navbar" id="navbar">
     <div class="nav-left">
-      <a class="logo" href="/public/pages/index.html">EventZ</a>
+      <a class="logo" href="/pages/index.html">EventZ</a>
     </div>
     <nav class="nav-center">
-      <a href="/public/pages/index.html">Home</a>
-      <a href="/public/pages/list-events.html">Events</a>
-      <a href="/public/pages/admin.html" class="active">Admin</a>
+      <a href="/pages/index.html">Home</a>
+      <a href="/pages/list-events.html">Events</a>
+      <a href="/pages/admin.html" class="active">Admin</a>
     </nav>
     <div class="nav-right">
-      <button class="btn-nav" onclick="window.location.href='/public/pages/scan.html'">
+      <button class="btn-nav" onclick="window.location.href='/pages/scan.html'">
         <i class="fas fa-qrcode"></i>&nbsp; Scan Tickets
       </button>
       <button class="btn-nav danger" onclick="logout()">Logout</button>
@@ -119,6 +119,6 @@
     <p>© 2026 <b>EventZ</b>. Admin Panel.</p>
   </footer>
 
-  <script src="/public/js/admin.js"></script>
+  <script src="/js/admin.js"></script>
 </body>
 </html>

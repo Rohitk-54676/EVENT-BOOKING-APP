@@ -51,12 +51,12 @@ function initUserArea() {
 
   if (!token) {
     area.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled">Register</a>
+      <a href="/pages/login.html"    class="btn-nav">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled">Register</a>
     `;
     if (mobileAuth) mobileAuth.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
+      <a href="/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
     `;
     return;
   }
@@ -76,7 +76,7 @@ function initUserArea() {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  window.location.href = "/public/pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 /* ══════════════════════════════════════════
@@ -214,7 +214,7 @@ async function loadBookings() {
         <div class="empty-icon">🔐</div>
         <h2>Please Log In</h2>
         <p>Sign in to view your event tickets</p>
-        <a href="/public/pages/login.html" class="btn-empty">Login Now</a>
+        <a href="/pages/login.html" class="btn-empty">Login Now</a>
       </div>`;
     return;
   }
@@ -226,7 +226,7 @@ async function loadBookings() {
     </div>`;
 
   try {
-    const res = await fetch("http://localhost:5000/api/events/my-bookings", {
+    const res = await fetch("/api/events/my-bookings", {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -238,7 +238,7 @@ async function loadBookings() {
           <div class="empty-icon">🎫</div>
           <h2>No Bookings Yet</h2>
           <p>You haven't booked any events. Go discover something amazing!</p>
-          <a href="/public/pages/list-events.html" class="btn-empty">Browse Events</a>
+          <a href="/pages/list-events.html" class="btn-empty">Browse Events</a>
         </div>`;
       return;
     }

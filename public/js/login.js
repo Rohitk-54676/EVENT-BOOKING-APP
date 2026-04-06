@@ -4,7 +4,7 @@ const btn         = document.getElementById("submitBtn");
 const forgotLink  = document.getElementById("forgotLink");
 const registerLink= document.getElementById("registerLink");
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = "/api/auth";
 
 /* ── Toggle password visibility ── */
 function togglePass(inputId, toggleBtn) {
@@ -45,7 +45,7 @@ form.addEventListener("submit", async (e) => {
     localStorage.setItem("role",  data.role);
 
     showMessage("Login successful! Redirecting…", "var(--success)");
-    setTimeout(() => { window.location.href = "index.html"; }, 1000);
+    setTimeout(() => { window.location.href = "/pages/index.html"; }, 1000);
 
   } catch (err) {
     console.error(err);

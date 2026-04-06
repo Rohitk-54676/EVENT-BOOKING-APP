@@ -2,7 +2,7 @@ const container  = document.getElementById("all-events");
 const countBadge = document.getElementById("eventCount");
 const searchInput= document.getElementById("searchInput");
 
-const API_URL = "http://localhost:5000/api/events";
+const API_URL = "/api/events";
 
 let allEvents = [];
 
@@ -60,12 +60,12 @@ function initUserArea() {
     mobileAuth.innerHTML = `<button class="btn-nav" onclick="logout()" style="width:100%">Logout</button>`;
   } else {
     area.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled">Register</a>
+      <a href="/pages/login.html"    class="btn-nav">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled">Register</a>
     `;
     mobileAuth.innerHTML = `
-      <a href="/public/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
-      <a href="/public/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
+      <a href="/pages/login.html"    class="btn-nav" style="flex:1;text-align:center">Login</a>
+      <a href="/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>
     `;
   }
 }
@@ -73,7 +73,7 @@ function initUserArea() {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  window.location.href = "/public/pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 /* ══════════════════════════════════════════
@@ -306,7 +306,7 @@ function showToast(msg) {
    NAVIGATE
 ══════════════════════════════════════════ */
 function viewEvent(id) {
-  window.location.href = `/public/pages/event.html?id=${id}`;
+  window.location.href = `/pages/event.html?id=${id}`;
 }
 
 /* ══════════════════════════════════════════

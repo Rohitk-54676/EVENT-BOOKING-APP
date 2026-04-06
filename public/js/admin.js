@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  window.location.href = "/public/pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 /* ════════════════════════════════════════
@@ -128,8 +128,8 @@ form.addEventListener("submit", async (e) => {
 
   try {
     const url    = editMode
-      ? `http://localhost:5000/api/events/${editEventId}`
-      : `http://localhost:5000/api/events`;
+      ? `/api/events/${editEventId}`
+      : `/api/events`;
     const method = editMode ? "PUT" : "POST";
 
     const res  = await fetch(url, {
@@ -179,7 +179,7 @@ async function loadAdminEvents() {
     </div>`;
 
   try {
-    const res    = await fetch("http://localhost:5000/api/events/admin/events", {
+    const res    = await fetch("/api/events/admin/events", {
       headers: { Authorization: `Bearer ${token}` },
     });
     const events = await res.json();
@@ -261,7 +261,7 @@ loadAdminEvents();
 
 async function editEvent(id) {
   const token = localStorage.getItem("token");
-  const res   = await fetch(`http://localhost:5000/api/events/${id}`, {
+  const res   = await fetch(`/api/events/${id}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const event = await res.json();
@@ -288,7 +288,7 @@ async function editEvent(id) {
 
 async function startDelete(id) {
   const token = localStorage.getItem("token");
-  await fetch(`http://localhost:5000/api/events/${id}/send-delete-otp`, {
+  await fetch(`/api/events/${id}/send-delete-otp`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -299,7 +299,7 @@ async function confirmDelete(id) {
   const token = localStorage.getItem("token");
   const otp   = document.getElementById(`otpInput-${id}`).value;
 
-  const res  = await fetch(`http://localhost:5000/api/events/${id}/delete`, {
+  const res  = await fetch(`/api/events/${id}/delete`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -318,12 +318,12 @@ function cancelDelete(id) {
 }
 
 function viewRegistrations(id) {
-  window.location.href = `/public/pages/registrations.html?id=${id}`;
+  window.location.href = `/pages/registrations.html?id=${id}`;
 }
 
 async function downloadExcel(id) {
   const token = localStorage.getItem("token");
-  const res   = await fetch(`http://localhost:5000/api/events/${id}/export`, {
+  const res   = await fetch(`/api/events/${id}/export`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const blob = await res.blob();
@@ -336,5 +336,5 @@ async function downloadExcel(id) {
 }
 
 function goScan() {
-  window.location.href = "/public/pages/scan.html";
+  window.location.href = "/pages/scan.html";
 }

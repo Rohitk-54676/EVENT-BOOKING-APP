@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("role");
-  window.location.href = "/public/pages/login.html";
+  window.location.href = "/pages/login.html";
 }
 
 /* ════════════════════════════════════════
@@ -43,7 +43,7 @@ async function loadData() {
 
   try {
     const res = await fetch(
-      `http://localhost:5000/api/events/${eventId}/registrations`,
+      `/api/events/${eventId}/registrations`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
@@ -144,7 +144,7 @@ document.getElementById("searchInput").addEventListener("input", function () {
 
 /* ── Export Excel (reuse from admin.js) ── */
 async function downloadExcel() {
-  const res  = await fetch(`http://localhost:5000/api/events/${eventId}/export`, {
+  const res  = await fetch(`/api/events/${eventId}/export`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const blob = await res.blob();

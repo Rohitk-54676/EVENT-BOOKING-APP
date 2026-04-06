@@ -3,85 +3,121 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel</title>
+  <title>Admin Panel — EventZ</title>
   <link rel="stylesheet" href="/public/css/admin.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
-  <!-- Header -->
-  <header class="admin-header">
-    <div class="header-content">
-      <div class="header-left">
-        <div class="header-icon"><i class="fas fa-shield-alt"></i></div>
-        <div>
-          <h1>Admin Panel</h1>
-          <p>Manage your events and tickets</p>
-        </div>
-      </div>
-      <button class="scan-btn" onclick="goScan()"><i class="fas fa-qrcode"></i> Scan Tickets</button>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a class="logo" href="/public/pages/index.html">EventZ</a>
+    </div>
+    <nav class="nav-center">
+      <a href="/public/pages/index.html">Home</a>
+      <a href="/public/pages/list-events.html">Events</a>
+      <a href="/public/pages/admin.html" class="active">Admin</a>
+    </nav>
+    <div class="nav-right">
+      <button class="btn-nav" onclick="window.location.href='/public/pages/scan.html'">
+        <i class="fas fa-qrcode"></i>&nbsp; Scan Tickets
+      </button>
+      <button class="btn-nav danger" onclick="logout()">Logout</button>
     </div>
   </header>
 
+  <!-- PAGE HERO -->
+  <section class="admin-hero">
+    <div class="hero-eyebrow"><span class="dot"></span>Admin Dashboard</div>
+    <h1>Manage <span class="grad-text">Events</span></h1>
+    <p>Create, edit and track all your events from one place.</p>
+  </section>
+
   <main class="admin-main">
 
-    <!-- Create/Edit Event Form -->
+    <!-- CREATE / EDIT FORM -->
     <section class="form-section animate-fade-in">
       <div class="section-title-bar">
-        <h2 id="formTitle"><i class="fas fa-plus-circle"></i> Create Event</h2>
+        <div class="stb-left">
+          <div class="stb-icon"><i class="fas fa-plus-circle"></i></div>
+          <h2 id="formTitle">Create Event</h2>
+        </div>
         <span id="editBadge" class="edit-badge hidden"><i class="fas fa-pen"></i> Editing</span>
       </div>
 
-      <form id="eventForm" class="event-form">
+      <form id="eventForm" novalidate>
         <div class="form-grid">
           <div class="form-group">
-            <label for="title"><i class="fas fa-heading"></i> Event Title</label>
+            <label><i class="fas fa-heading"></i> Event Title</label>
             <input type="text" id="title" placeholder="Enter event title" required />
           </div>
           <div class="form-group">
-            <label for="date"><i class="fas fa-calendar-alt"></i> Date</label>
+            <label><i class="fas fa-calendar-alt"></i> Date</label>
             <input type="date" id="date" required />
           </div>
           <div class="form-group">
-            <label for="location"><i class="fas fa-map-marker-alt"></i> Location</label>
-            <input type="text" id="location" placeholder="Event location" />
+            <label><i class="fas fa-map-marker-alt"></i> Location</label>
+            <input type="text" id="location" placeholder="Event venue" />
           </div>
           <div class="form-group">
-            <label for="image"><i class="fas fa-image"></i> Image URL</label>
+            <label><i class="fas fa-image"></i> Image URL</label>
             <input type="text" id="image" placeholder="https://..." />
           </div>
         </div>
 
         <div class="form-group full-width">
-          <label for="description"><i class="fas fa-align-left"></i> Description</label>
+          <label><i class="fas fa-align-left"></i> Description</label>
           <textarea id="description" placeholder="Describe your event..." rows="3"></textarea>
         </div>
 
-        <!-- Tickets Section -->
+        <!-- Tickets -->
         <div class="tickets-section">
           <div class="tickets-header">
             <h3><i class="fas fa-ticket-alt"></i> Tickets</h3>
-            <button type="button" class="add-ticket-btn" onclick="addTicket()"><i class="fas fa-plus"></i> Add Ticket</button>
+            <button type="button" class="add-ticket-btn" onclick="addTicket()">
+              <i class="fas fa-plus"></i> Add Ticket
+            </button>
+          </div>
+          <div class="ticket-labels">
+            <span>Name</span><span>Price (₹)</span><span>Max Seats</span><span>Team Size</span><span></span>
           </div>
           <div id="ticketsContainer"></div>
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="submit-btn" id="submitBtn"><i class="fas fa-rocket"></i> Create Event</button>
-          <button type="button" class="cancel-btn hidden" id="cancelEditBtn" onclick="cancelEdit()"><i class="fas fa-times"></i> Cancel</button>
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <i class="fas fa-rocket"></i> Create Event
+          </button>
+          <button type="button" class="cancel-btn hidden" id="cancelEditBtn" onclick="cancelEdit()">
+            <i class="fas fa-times"></i> Cancel
+          </button>
         </div>
         <p id="msg" class="form-msg"></p>
       </form>
     </section>
 
-    <!-- Events List -->
-    <section class="events-section animate-fade-in" style="animation-delay:0.2s">
-      <h2><i class="fas fa-calendar-check"></i> Your Events</h2>
+    <!-- EVENTS LIST -->
+    <section class="events-section animate-fade-in" style="animation-delay:.15s">
+      <div class="events-section-header">
+        <h2><i class="fas fa-calendar-check"></i> Your Events</h2>
+        <span class="events-count-badge" id="eventsCountBadge"></span>
+      </div>
       <div id="adminEvents" class="events-grid"></div>
     </section>
 
   </main>
+
+  <footer class="footer">
+    <p>© 2026 <b>EventZ</b>. Admin Panel.</p>
+  </footer>
 
   <script src="/public/js/admin.js"></script>
 </body>

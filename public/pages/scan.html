@@ -1,278 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scan Ticket</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --scan-primary: #7c3aed;
-      --scan-primary-light: #a78bfa;
-      --scan-accent: #ec4899;
-      --scan-bg: #f0f0f5;
-      --scan-surface: #ffffff;
-      --scan-surface-glass: rgba(255,255,255,0.6);
-      --scan-text: #1e1b4b;
-      --scan-text-muted: #6b7280;
-      --scan-border: rgba(124,58,237,0.15);
-      --scan-success: #10b981;
-      --scan-error: #ef4444;
-      --scan-warning: #f59e0b;
-      --scan-gradient: linear-gradient(135deg, #7c3aed, #a855f7, #ec4899);
-      --scan-radius: 1rem;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--scan-bg);
-      color: var(--scan-text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* Animated background */
-    .bg-orbs {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-    }
-    .bg-orbs span {
-      position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.18; animation: float 8s ease-in-out infinite;
-    }
-    .bg-orbs span:nth-child(1) { width: 400px; height: 400px; background: var(--scan-primary); top: -10%; left: -5%; }
-    .bg-orbs span:nth-child(2) { width: 350px; height: 350px; background: var(--scan-accent); bottom: -10%; right: -5%; animation-delay: 3s; }
-    .bg-orbs span:nth-child(3) { width: 250px; height: 250px; background: var(--scan-primary-light); top: 50%; left: 50%; animation-delay: 5s; }
-
-    @keyframes float {
-      0%, 100% { transform: translateY(0) scale(1); }
-      50% { transform: translateY(-30px) scale(1.05); }
-    }
-
-    /* Header */
-    .scan-header {
-      background: var(--scan-gradient);
-      padding: 2.5rem 1.5rem 3.5rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .scan-header::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.15) 0%, transparent 50%);
-    }
-    .scan-header h1 {
-      font-size: 1.8rem; font-weight: 800; color: #fff; position: relative;
-    }
-    .scan-header p {
-      color: rgba(255,255,255,0.85); margin-top: 0.5rem; font-size: 0.95rem; position: relative;
-    }
-    .header-icon {
-      width: 60px; height: 60px; margin: 0 auto 1rem;
-      background: rgba(255,255,255,0.2); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem; position: relative;
-      animation: pulse-ring 2s ease-in-out infinite;
-    }
-    @keyframes pulse-ring {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.3); }
-      50% { box-shadow: 0 0 0 15px rgba(255,255,255,0); }
-    }
-
-    /* Main container */
-    .scan-container {
-      max-width: 500px; margin: -2rem auto 2rem; padding: 0 1rem; position: relative; z-index: 1;
-    }
-
-    /* Card */
-    .scan-card {
-      background: var(--scan-surface-glass);
-      backdrop-filter: blur(20px);
-      border: 1px solid var(--scan-border);
-      border-radius: var(--scan-radius);
-      padding: 2rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 20px 60px -15px rgba(124,58,237,0.15);
-      animation: card-in 0.6s ease-out both;
-      perspective: 1000px;
-    }
-    .scan-card:nth-child(2) { animation-delay: 0.15s; }
-
-    @keyframes card-in {
-      0% { opacity: 0; transform: translateY(30px) rotateX(5deg); }
-      100% { opacity: 1; transform: translateY(0) rotateX(0); }
-    }
-
-    .card-title {
-      font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-    .card-title span { font-size: 1.3rem; }
-
-    /* Scanner section */
-    .scanner-controls {
-      display: flex; gap: 0.75rem; margin-bottom: 1rem;
-    }
-
-    .btn {
-      flex: 1; padding: 0.85rem 1.25rem;
-      border: none; border-radius: 0.75rem;
-      font-family: inherit; font-size: 0.9rem; font-weight: 600;
-      cursor: pointer; transition: all 0.3s ease;
-      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-    }
-    .btn:active { transform: scale(0.97); }
-
-    .btn-start {
-      background: var(--scan-gradient); color: #fff;
-      box-shadow: 0 8px 25px -5px rgba(124,58,237,0.4);
-    }
-    .btn-start:hover { box-shadow: 0 12px 35px -5px rgba(124,58,237,0.5); transform: translateY(-2px); }
-
-    .btn-stop {
-      background: rgba(239,68,68,0.1); color: var(--scan-error);
-      border: 1px solid rgba(239,68,68,0.2);
-    }
-    .btn-stop:hover { background: rgba(239,68,68,0.15); }
-
-    /* QR Reader */
-    #reader {
-      display: none; width: 100%; max-width: 320px; margin: 1rem auto;
-      border-radius: 0.75rem; overflow: hidden;
-      border: 3px solid var(--scan-primary-light);
-      box-shadow: 0 0 30px rgba(124,58,237,0.2);
-      animation: scanner-glow 2s ease-in-out infinite;
-    }
-    @keyframes scanner-glow {
-      0%, 100% { box-shadow: 0 0 20px rgba(124,58,237,0.2); }
-      50% { box-shadow: 0 0 40px rgba(124,58,237,0.35); }
-    }
-
-    /* Divider */
-    .divider {
-      display: flex; align-items: center; gap: 1rem;
-      margin: 0.5rem 0; color: var(--scan-text-muted); font-size: 0.85rem; font-weight: 600;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--scan-border), transparent);
-    }
-
-    /* Input group */
-    .input-group {
-      display: flex; gap: 0.75rem; margin-top: 1rem;
-    }
-    .input-group input {
-      flex: 1; padding: 0.85rem 1rem;
-      border: 2px solid var(--scan-border);
-      border-radius: 0.75rem; font-family: inherit; font-size: 0.95rem;
-      background: rgba(255,255,255,0.8);
-      transition: all 0.3s ease; outline: none;
-    }
-    .input-group input:focus {
-      border-color: var(--scan-primary);
-      box-shadow: 0 0 0 4px rgba(124,58,237,0.1);
-    }
-
-    .btn-verify {
-      padding: 0.85rem 1.5rem;
-      background: var(--scan-gradient); color: #fff;
-      border: none; border-radius: 0.75rem;
-      font-family: inherit; font-size: 0.9rem; font-weight: 600;
-      cursor: pointer; transition: all 0.3s ease;
-      white-space: nowrap;
-    }
-    .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 8px 25px -5px rgba(124,58,237,0.4); }
-    .btn-verify:active { transform: scale(0.97); }
-
-    /* Message */
-    #msg {
-      margin-top: 1.25rem; padding: 0; text-align: center;
-      font-weight: 600; font-size: 0.95rem;
-      min-height: 1.5rem; transition: all 0.3s ease;
-    }
-
-    .msg-box {
-      padding: 1rem !important; border-radius: 0.75rem;
-      animation: msg-pop 0.4s ease-out;
-    }
-    .msg-success {
-      background: rgba(16,185,129,0.1); color: var(--scan-success);
-      border: 1px solid rgba(16,185,129,0.2);
-    }
-    .msg-error {
-      background: rgba(239,68,68,0.1); color: var(--scan-error);
-      border: 1px solid rgba(239,68,68,0.2);
-    }
-    .msg-warning {
-      background: rgba(245,158,11,0.1); color: var(--scan-warning);
-      border: 1px solid rgba(245,158,11,0.2);
-    }
-
-    @keyframes msg-pop {
-      0% { opacity: 0; transform: scale(0.9); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    /* Back link */
-    .back-link {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      color: rgba(255,255,255,0.85); text-decoration: none;
-      font-size: 0.9rem; font-weight: 500;
-      position: absolute; top: 1.25rem; left: 1.25rem; z-index: 1;
-      transition: color 0.2s;
-    }
-    .back-link:hover { color: #fff; }
-
-    /* Responsive */
-    @media (max-width: 480px) {
-      .scan-header { padding: 2rem 1rem 3rem; }
-      .scan-header h1 { font-size: 1.4rem; }
-      .scan-card { padding: 1.25rem; }
-      .scanner-controls { flex-direction: column; }
-      .input-group { flex-direction: column; }
-      .btn-verify { width: 100%; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scan Ticket — EventZ</title>
+  <link rel="stylesheet" href="/public/css/admin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-  <div class="bg-orbs">
-    <span></span><span></span><span></span>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
   </div>
 
-  <header class="scan-header">
-    <a href="/public/pages/admin.html" class="back-link">← Back</a>
-    <div class="header-icon">📷</div>
-    <h1>Scan Ticket</h1>
-    <p>Verify attendee tickets via camera or manual code entry</p>
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a class="logo" href="/public/pages/index.html">EventZ</a>
+    </div>
+    <nav class="nav-center">
+      <a href="/public/pages/index.html">Home</a>
+      <a href="/public/pages/list-events.html">Events</a>
+      <a href="/public/pages/admin.html">Admin</a>
+    </nav>
+    <div class="nav-right">
+      <a href="/public/pages/admin.html" class="btn-nav">
+        ← Back to Admin
+      </a>
+      <button class="btn-nav danger" onclick="logout()">Logout</button>
+    </div>
   </header>
 
-  <div class="scan-container">
+  <!-- HERO -->
+  <section class="admin-hero">
+    <div class="hero-eyebrow"><span class="dot"></span>Ticket Verification</div>
+    <h1>Scan <span class="grad-text">Tickets</span></h1>
+    <p>Verify attendee tickets via camera or manual code entry.</p>
+  </section>
 
-    <!-- Scanner Card -->
-    <div class="scan-card">
-      <div class="card-title"><span>📸</span> QR Scanner</div>
-      <div class="scanner-controls">
-        <button class="btn btn-start" onclick="startScanner()">▶ Start Scanner</button>
-        <button class="btn btn-stop" onclick="stopScanner()">⏹ Stop</button>
+  <!-- SCAN LAYOUT -->
+  <main class="scan-main">
+
+    <!-- QR SCANNER CARD -->
+    <div class="scan-card animate-fade-in">
+      <div class="scan-card-header">
+        <div class="scan-card-icon" style="background:rgba(247,37,133,.12);border-color:rgba(247,37,133,.25);">
+          <span>📷</span>
+        </div>
+        <div>
+          <h3>QR Scanner</h3>
+          <p>Point camera at the ticket QR code</p>
+        </div>
       </div>
-      <div id="reader"></div>
+
+      <div class="scan-btns">
+        <button class="btn-scan-start" onclick="startScanner()">
+          ▶ Start Camera
+        </button>
+        <button class="btn-scan-stop" onclick="stopScanner()">
+          ⏹ Stop
+        </button>
+      </div>
+
+      <div id="reader" class="qr-reader"></div>
     </div>
 
-    <!-- Manual Entry Card -->
-    <div class="scan-card">
-      <div class="card-title"><span>⌨️</span> Manual Entry</div>
-      <div class="divider">Enter ticket code below</div>
-      <div class="input-group">
+    <!-- MANUAL ENTRY CARD -->
+    <div class="scan-card animate-fade-in" style="animation-delay:.12s">
+      <div class="scan-card-header">
+        <div class="scan-card-icon" style="background:rgba(76,201,240,.12);border-color:rgba(76,201,240,.25);">
+          <span>⌨️</span>
+        </div>
+        <div>
+          <h3>Manual Entry</h3>
+          <p>Type or paste the ticket code below</p>
+        </div>
+      </div>
+
+      <div class="manual-input-wrap">
         <input type="text" id="code" placeholder="e.g. TKT-ABC123XYZ" />
-        <button class="btn-verify" onclick="verify()">Verify ✓</button>
+        <button class="btn-verify" onclick="verify()">
+          Verify ✓
+        </button>
       </div>
+
+      <div id="msg" class="scan-msg"></div>
     </div>
 
-    <p id="msg"></p>
-  </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 <b>EventZ</b>. Admin Panel.</p>
+  </footer>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="/public/js/scan.js"></script>

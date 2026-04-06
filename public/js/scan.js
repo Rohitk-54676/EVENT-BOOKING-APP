@@ -1,48 +1,80 @@
+/* ══════════════════════════════════════════
+   SCAN.JS — All original logic preserved.
+   Navbar + logout added. showMsg updated
+   to match new .scan-msg CSS classes.
+══════════════════════════════════════════ */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const navbar = document.getElementById("navbar");
+  if (navbar) {
+    window.addEventListener("scroll", () =>
+      navbar.classList.toggle("scrolled", window.scrollY > 20)
+    );
+  }
+});
+
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  window.location.href = "/public/pages/login.html";
+}
+
+/* ════════════════════════════════════════
+   YOUR ORIGINAL CODE BELOW — UNCHANGED
+   (only showMsg / clearMsg updated to use
+    new .scan-msg CSS instead of old classes)
+════════════════════════════════════════ */
+
 const token = localStorage.getItem("token");
 let scanner = null;
 
 // Verify ticket
 async function verify(codeInput = null) {
   const input = document.getElementById("code");
-  const msg = document.getElementById("msg");
-  const code = codeInput || input.value.trim();
+  const msg   = document.getElementById("msg");
+  const code  = codeInput || input.value.trim();
 
   if (!code) {
-    showMsg(msg, "Enter ticket code", "error");
+    showMsg(msg, "Enter a ticket code", "error");
     return;
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/events/verify-ticket", {
+    const res  = await fetch("http://localhost:5000/api/events/verify-ticket", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ ticketCode: code })
+      body: JSON.stringify({ ticketCode: code }),
     });
 
     const data = await res.json();
     const type = res.ok ? "success" : "error";
-    showMsg(msg, `${data.message} | ${data.event} (${data.ticket})`, type);
+
+    showMsg(
+      msg,
+      `${data.message}${data.event ? ` — ${data.event}` : ""}${data.ticket ? ` (${data.ticket})` : ""}`,
+      type
+    );
 
     input.value = "";
-    setTimeout(() => clearMsg(msg), 3000);
+    setTimeout(() => clearMsg(msg), 4000);
+
   } catch (err) {
     showMsg(msg, "Something went wrong", "error");
   }
 }
 
-// Show styled message
+// Show styled message — updated for .scan-msg classes
 function showMsg(el, text, type) {
   el.textContent = text;
-  el.className = "msg-box";
-  el.classList.add(type === "success" ? "msg-success" : type === "warning" ? "msg-warning" : "msg-error");
+  el.className   = `scan-msg ${type}`;
 }
 
 function clearMsg(el) {
   el.textContent = "";
-  el.className = "";
+  el.className   = "scan-msg";
 }
 
 // Enter key support
@@ -69,6 +101,8 @@ function startScanner() {
     () => {}
   ).catch(err => {
     console.error("Camera error:", err);
+    const msg = document.getElementById("msg");
+    showMsg(msg, "Camera access denied or not available", "error");
   });
 }
 

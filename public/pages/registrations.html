@@ -3,394 +3,99 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Event Registrations</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --primary: #6c3ce0;
-      --primary-light: #8b5cf6;
-      --primary-glow: #a78bfa;
-      --accent: #e8457a;
-      --bg: #f4f2fb;
-      --card: #ffffff;
-      --text: #1e1b4b;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --radius: 1rem;
-      --shadow: 0 4px 24px rgba(108,60,224,0.10);
-      --shadow-lg: 0 20px 60px rgba(108,60,224,0.18);
-      --gradient: linear-gradient(135deg, var(--primary), #8b5cf6, var(--accent));
-    }
-
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* ===== Header ===== */
-    .page-header {
-      background: var(--gradient);
-      padding: 2rem 1.5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .page-header::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 40%);
-    }
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .header-left { display: flex; align-items: center; gap: 1rem; }
-    .header-icon {
-      width: 52px; height: 52px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 14px;
-      display: grid; place-items: center;
-      font-size: 1.4rem; color: #fff;
-      backdrop-filter: blur(10px);
-    }
-    .page-header h1 { font-size: 1.6rem; font-weight: 800; color: #fff; }
-    .page-header p { font-size: 0.85rem; color: rgba(255,255,255,0.8); margin-top: 2px; }
-    .back-btn {
-      background: rgba(255,255,255,0.2);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.3);
-      padding: 0.6rem 1.2rem;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s;
-      font-size: 0.9rem;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .back-btn:hover { background: rgba(255,255,255,0.35); transform: translateY(-2px); }
-
-    /* ===== Main ===== */
-    .main-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    /* ===== Stats ===== */
-    .stats-bar {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      animation: cardAppear 0.5s ease-out both;
-    }
-    .stat-card {
-      flex: 1;
-      min-width: 140px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.2rem 1.4rem;
-      box-shadow: var(--shadow);
-      transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
-    }
-    .stat-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-    }
-    .stat-card .stat-label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .stat-card .stat-value {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-top: 0.3rem;
-    }
-    .stat-card.accent .stat-value { color: var(--accent); }
-    .stat-card.success .stat-value { color: var(--success); }
-
-    /* ===== Search ===== */
-    .search-section {
-      animation: cardAppear 0.6s ease-out both;
-    }
-    .search-wrapper {
-      position: relative;
-    }
-    .search-wrapper input {
-      width: 100%;
-      padding: 0.85rem 1.2rem 0.85rem 3rem;
-      border: 1.5px solid var(--border);
-      border-radius: 12px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      background: var(--card);
-      transition: all 0.3s;
-      box-shadow: var(--shadow);
-    }
-    .search-wrapper input:focus {
-      outline: none;
-      border-color: var(--primary-light);
-      box-shadow: 0 0 0 3px rgba(108,60,224,0.12);
-    }
-    .search-wrapper input::placeholder { color: var(--text-muted); }
-    .search-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-
-    /* ===== Table ===== */
-    .table-section {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      animation: cardAppear 0.7s ease-out both;
-    }
-
-    table { width: 100%; border-collapse: collapse; }
-
-    thead th {
-      padding: 1rem 1.25rem;
-      text-align: left;
-      font-size: 0.78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--text-muted);
-      background: var(--bg);
-      border-bottom: 1.5px solid var(--border);
-    }
-
-    tbody td {
-      padding: 0.9rem 1.25rem;
-      font-size: 0.9rem;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.2s;
-    }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover td { background: #f8f7fd; }
-
-    .sno {
-      font-weight: 700;
-      color: var(--text-muted);
-      font-size: 0.82rem;
-    }
-
-    .ticket-badge {
-      display: inline-block;
-      padding: 0.3rem 0.9rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      background: #ede9fe;
-      color: var(--primary);
-      border: 1px solid #ddd6fe;
-    }
-
-    .member-name { font-weight: 700; color: var(--text); }
-
-    .member-reg {
-      font-family: 'Courier New', monospace;
-      color: var(--primary);
-      font-weight: 700;
-      font-size: 0.85rem;
-      background: #f3f0ff;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-    }
-
-    .member-contact {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
-
-    /* ===== States ===== */
-    .empty-state, .loading-state {
-      text-align: center;
-      padding: 4rem 1rem;
-      color: var(--text-muted);
-    }
-    .state-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      display: block;
-    }
-    .loading-state .state-icon { animation: spin 1s linear infinite; }
-    .empty-state p, .loading-state p { font-size: 1rem; }
-
-    .error-state {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--danger);
-    }
-    .error-state .state-icon { font-size: 2.5rem; margin-bottom: 0.8rem; display: block; }
-    .error-state button {
-      margin-top: 1rem;
-      background: var(--gradient);
-      color: #fff;
-      border: none;
-      padding: 0.65rem 1.8rem;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.3s;
-      box-shadow: 0 4px 20px rgba(108,60,224,0.3);
-    }
-    .error-state button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(108,60,224,0.4);
-    }
-
-    /* ===== Animations ===== */
-    @keyframes cardAppear {
-      0% { opacity: 0; transform: translateY(30px) scale(0.95); }
-      100% { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-    @keyframes rowAppear {
-      0% { opacity: 0; transform: translateX(-10px); }
-      100% { opacity: 1; transform: translateX(0); }
-    }
-
-    .hidden { display: none !important; }
-
-    /* ===== Responsive ===== */
-    @media (max-width: 768px) {
-      .header-content { flex-direction: column; gap: 1rem; text-align: center; }
-      .header-left { flex-direction: column; }
-      .stats-bar { flex-direction: column; }
-
-      .table-section { border-radius: 12px; }
-      table, thead, tbody, th, td, tr { display: block; }
-      thead { display: none; }
-      tbody tr {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        margin-bottom: 0.8rem;
-        padding: 1rem 1.2rem;
-        box-shadow: var(--shadow);
-      }
-      tbody tr:hover { background: #faf9ff; }
-      tbody td {
-        padding: 0.4rem 0;
-        border: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.85rem;
-      }
-      tbody td::before {
-        content: attr(data-label);
-        font-weight: 700;
-        color: var(--text-muted);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-right: 1rem;
-        flex-shrink: 0;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .page-header { padding: 1.5rem 1rem; }
-      .page-header h1 { font-size: 1.3rem; }
-      .main-content { padding: 1.2rem 0.8rem 3rem; }
-      .stat-card { padding: 1rem; }
-      .stat-card .stat-value { font-size: 1.4rem; }
-    }
-  </style>
+  <title>Registrations — EventZ</title>
+  <link rel="stylesheet" href="/public/css/admin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
-  <div class="page-header">
-    <div class="header-content">
-      <div class="header-left">
-        <div class="header-icon">📋</div>
-        <div>
-          <h1>Event Registrations</h1>
-          <p id="eventSubtitle">Loading registration data...</p>
-        </div>
-      </div>
-      <a href="javascript:history.back()" class="back-btn">← Back</a>
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a class="logo" href="/public/pages/index.html">EventZ</a>
+    </div>
+    <nav class="nav-center">
+      <a href="/public/pages/index.html">Home</a>
+      <a href="/public/pages/list-events.html">Events</a>
+      <a href="/public/pages/admin.html" class="active">Admin</a>
+    </nav>
+    <div class="nav-right">
+      <a href="/public/pages/admin.html" class="btn-nav">
+        <i class="fas fa-arrow-left"></i>&nbsp; Back to Admin
+      </a>
+      <button class="btn-nav danger" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <!-- PAGE HERO -->
+  <section class="admin-hero">
+    <div class="hero-eyebrow"><span class="dot"></span>Event Registrations</div>
+    <h1>View <span class="grad-text">Registrations</span></h1>
+    <p id="eventSubtitle">Loading registrations…</p>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="reg-stats" id="statsBar" style="display:none;">
+    <div class="rstat">
+      <div class="rstat-num" id="totalCount">0</div>
+      <div class="rstat-label">Total Registrations</div>
+    </div>
+    <div class="rstat">
+      <div class="rstat-num cyan" id="ticketCount">0</div>
+      <div class="rstat-label">Ticket Types</div>
     </div>
   </div>
 
-  <div class="main-content">
+  <main class="admin-main">
 
-    <div class="stats-bar hidden" id="statsBar">
-      <div class="stat-card">
-        <div class="stat-label">Total Registrations</div>
-        <div class="stat-value" id="totalCount">0</div>
+    <!-- SEARCH -->
+    <div class="search-row animate-fade-in">
+      <div class="search-wrap">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search by name, reg no, email, phone…" />
       </div>
-      <div class="stat-card accent">
-        <div class="stat-label">Unique Tickets</div>
-        <div class="stat-value" id="ticketCount">0</div>
-      </div>
+      <button class="btn-export" onclick="downloadExcel()">
+        <i class="fas fa-file-excel"></i> Export Excel
+      </button>
     </div>
 
-    <div class="search-section">
-      <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search by name, reg no, email..." />
-      </div>
+    <!-- LOADING -->
+    <div id="loadingState" class="state-box animate-fade-in">
+      <div class="state-spinner"></div>
+      <p>Loading registrations…</p>
     </div>
 
-    <div class="table-section">
-      <div class="loading-state" id="loadingState">
-        <span class="state-icon">⏳</span>
-        <p>Loading registrations...</p>
-      </div>
+    <!-- ERROR -->
+    <div id="errorState" class="state-box hidden">
+      <div class="state-icon">⚠️</div>
+      <h3>Failed to Load</h3>
+      <p id="errorMsg">Something went wrong</p>
+      <button class="btn-retry" onclick="loadData()">Try Again</button>
+    </div>
 
-      <div class="error-state hidden" id="errorState">
-        <span class="state-icon">⚠️</span>
-        <p id="errorMsg">Failed to load data</p>
-        <button onclick="loadData()">Retry</button>
-      </div>
+    <!-- EMPTY -->
+    <div id="emptyState" class="state-box hidden">
+      <div class="state-icon">🎫</div>
+      <h3>No Registrations Yet</h3>
+      <p>Registrations for this event will appear here.</p>
+    </div>
 
-      <div class="empty-state hidden" id="emptyState">
-        <span class="state-icon">📭</span>
-        <p>No registrations yet</p>
-      </div>
-
-      <table id="regTable" class="hidden">
+    <!-- TABLE -->
+    <div id="regTable" class="table-wrap hidden animate-fade-in">
+      <table class="reg-table">
         <thead>
           <tr>
             <th>#</th>
             <th>Ticket</th>
             <th>Name</th>
-            <th>Reg No</th>
+            <th>Reg No.</th>
             <th>Phone</th>
             <th>Email</th>
           </tr>
@@ -398,7 +103,12 @@
         <tbody id="data"></tbody>
       </table>
     </div>
-  </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 <b>EventZ</b>. Admin Panel.</p>
+  </footer>
 
   <script src="/public/js/registrations.js"></script>
 </body>

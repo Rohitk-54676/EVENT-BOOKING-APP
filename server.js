@@ -19,6 +19,7 @@ import cron from "node-cron";
 import { cleanupExpiredBookings } from "./utils/cleanupExpired.js";
 
 const app = express();
+app.set("trust proxy", 1);
 
 /* ===================== PATH FIX ===================== */
 const __filename = fileURLToPath(import.meta.url);

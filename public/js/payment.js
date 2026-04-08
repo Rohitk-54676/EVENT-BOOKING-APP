@@ -5,21 +5,21 @@
    - Duplicate booking bug fixed
 ══════════════════════════════════════════ */
 
-let teamSize    = 1;
+let teamSize = 1;
 let ticketPrice = 0;   // 🔑 tracks whether ticket is free
 
-const token    = localStorage.getItem("token");
-const params   = new URLSearchParams(window.location.search);
-const eventId  = params.get("id");
+const token = localStorage.getItem("token");
+const params = new URLSearchParams(window.location.search);
+const eventId = params.get("id");
 const ticketId = Number(params.get("ticket")); // 🔥 IMPORTANT
 
 /* ══════════════════════════════════════════
    NAVBAR + USER AREA
 ══════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
-  const navbar    = document.getElementById("navbar");
+  const navbar = document.getElementById("navbar");
   const hamburger = document.getElementById("hamburger");
-  const mobileMenu= document.getElementById("mobileMenu");
+  const mobileMenu = document.getElementById("mobileMenu");
 
   window.addEventListener("scroll", () =>
     navbar.classList.toggle("scrolled", window.scrollY > 20)
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  const area       = document.getElementById("userArea");
+  const area = document.getElementById("userArea");
   const mobileAuth = document.getElementById("mobileAuth");
 
   if (!token) {
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <a href="/pages/register.html" class="btn-nav filled" style="flex:1;text-align:center">Register</a>`;
   } else {
     let user = null;
-    try { user = JSON.parse(atob(token.split(".")[1])); } catch {}
+    try { user = JSON.parse(atob(token.split(".")[1])); } catch { }
     area.innerHTML = `
       <span style="font-size:.84rem;color:var(--muted-lt)">Hi, ${user?.name?.split(" ")[0] || "there"} 👋</span>
       <button class="btn-nav" onclick="logout()">Logout</button>`;
@@ -69,13 +69,13 @@ function logout() {
 ══════════════════════════════════════════ */
 async function loadTicketDetails() {
   try {
-    const res   = await fetch(`/api/events/${eventId}`);
+    const res = await fetch(`/api/events/${eventId}`);
     const event = await res.json();
 
     const ticket = event.tickets.find(t => t.id === ticketId);
     if (!ticket) return;
 
-    teamSize    = ticket.team_size;
+    teamSize = ticket.team_size;
     ticketPrice = parseFloat(ticket.price) || 0;  // 🔑 store price globally
 
     const isFree = ticketPrice === 0;
@@ -85,7 +85,7 @@ async function loadTicketDetails() {
 
     /* ── Build member forms ── */
     const container = document.getElementById("membersContainer");
-    const loading   = document.getElementById("membersLoading");
+    const loading = document.getElementById("membersLoading");
     if (loading) loading.style.display = "none";
     container.innerHTML = "";
 
@@ -165,8 +165,8 @@ function updatePayButton(isFree) {
       <span class="btn-spinner"></span>
     `;
     btn.style.background = "linear-gradient(135deg, #4ade80, #22d3ee)";
-    btn.style.color      = "#0d0d1a";
-    btn.style.boxShadow  = "0 6px 24px rgba(74,222,128,0.4)";
+    btn.style.color = "#0d0d1a";
+    btn.style.boxShadow = "0 6px 24px rgba(74,222,128,0.4)";
     btn.onclick = bookFree;
   } else {
     btn.innerHTML = `
@@ -177,8 +177,8 @@ function updatePayButton(isFree) {
       <span class="btn-spinner"></span>
     `;
     btn.style.background = "";
-    btn.style.color      = "";
-    btn.style.boxShadow  = "";
+    btn.style.color = "";
+    btn.style.boxShadow = "";
     btn.onclick = pay;
   }
 }
@@ -199,18 +199,18 @@ function populateSummary(event, ticket, isFree) {
     img.onerror = () => { img.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80"; };
   }
 
-  setText("summaryTitle",      event.title);
+  setText("summaryTitle", event.title);
   setText("summaryTicketName", ticket.name);
-  setText("summaryTeamSize",   `${ticket.team_size} ${ticket.team_size > 1 ? "members" : "person"}`);
-  setText("summaryPrice",      isFree ? "Free" : `₹${ticket.price.toLocaleString("en-IN")}`);
+  setText("summaryTeamSize", `${ticket.team_size} ${ticket.team_size > 1 ? "members" : "person"}`);
+  setText("summaryPrice", isFree ? "Free" : `₹${ticket.price.toLocaleString("en-IN")}`);
 
   const totalEl = document.getElementById("summaryTotal");
   if (totalEl) {
     if (isFree) {
       totalEl.textContent = "Free";
-      totalEl.style.background            = "linear-gradient(90deg,#4ade80,#22d3ee)";
-      totalEl.style.webkitBackgroundClip  = "text";
-      totalEl.style.webkitTextFillColor   = "transparent";
+      totalEl.style.background = "linear-gradient(90deg,#4ade80,#22d3ee)";
+      totalEl.style.webkitBackgroundClip = "text";
+      totalEl.style.webkitTextFillColor = "transparent";
     } else {
       totalEl.textContent = `₹${ticket.price.toLocaleString("en-IN")}`;
     }
@@ -219,14 +219,14 @@ function populateSummary(event, ticket, isFree) {
   const dateEl = document.querySelector("#summaryDate span");
   if (dateEl && event.date) {
     dateEl.textContent = new Date(event.date).toLocaleDateString("en-IN", {
-      weekday:"short", day:"numeric", month:"short", year:"numeric"
+      weekday: "short", day: "numeric", month: "short", year: "numeric"
     });
   }
 
   const locEl = document.querySelector("#summaryLocation span");
   if (locEl) locEl.textContent = event.location || "Venue TBA";
 
-  document.title = `${isFree ? "Register for" : "Pay for"} ${event.title} — EventZ`;
+  document.title = `${isFree ? "Register for" : "Pay for"} ${event.title} — EventPulse`;
 }
 
 function setText(id, val) {
@@ -239,8 +239,8 @@ function setText(id, val) {
    Shared by both free and paid flows
 ══════════════════════════════════════════ */
 function collectMembers() {
-  const names  = document.querySelectorAll(".member-name");
-  const regs   = document.querySelectorAll(".member-reg");
+  const names = document.querySelectorAll(".member-name");
+  const regs = document.querySelectorAll(".member-reg");
   const phones = document.querySelectorAll(".member-phone");
   const emails = document.querySelectorAll(".member-email");
 
@@ -248,19 +248,19 @@ function collectMembers() {
   document.querySelectorAll(".member-name,.member-reg,.member-phone,.member-email")
     .forEach(el => el.classList.remove("invalid"));
 
-  const members  = [];
+  const members = [];
   let firstError = null;
 
   for (let i = 0; i < teamSize; i++) {
-    const name  = names[i].value.trim();
-    const reg   = regs[i].value.trim();
+    const name = names[i].value.trim();
+    const reg = regs[i].value.trim();
     const phone = phones[i].value.trim();
     const email = emails[i].value.trim();
 
     let memberHasError = false;
 
-    if (!name)  { names[i].classList.add("invalid");  memberHasError = true; }
-    if (!reg)   { regs[i].classList.add("invalid");   memberHasError = true; }
+    if (!name) { names[i].classList.add("invalid"); memberHasError = true; }
+    if (!reg) { regs[i].classList.add("invalid"); memberHasError = true; }
     if (!phone) { phones[i].classList.add("invalid"); memberHasError = true; }
     if (!email) { emails[i].classList.add("invalid"); memberHasError = true; }
 
@@ -332,7 +332,26 @@ async function bookFree() {
 
     const confirmData = await confirmRes.json();
     if (!confirmRes.ok) throw new Error(confirmData.message);
+    // 🔥 SEND TICKET EMAIL (FREE FLOW)
+    try {
+      const ticket = confirmData.ticket;
 
+      await emailjs.send(
+        "service_2qmrv2n",
+        "template_gxm4bjk",   // ⚠️ your template
+        {
+          to_email: ticket.email,
+          eventName: ticket.eventName,
+          date: ticket.date,
+          location: ticket.location,
+          ticketName: ticket.ticketName,
+          ticketCode: ticket.ticketCode,
+          qrImage: ticket.qrImage
+        }
+      );
+    } catch (err) {
+      console.error("Free ticket email failed:", err);
+    }
     // ✅ SUCCESS
     showMsg("🎉 You're registered! Redirecting to your tickets…", "success");
     const btn = document.getElementById("payBtn");
@@ -439,8 +458,8 @@ async function pay() {
 
     // 🟡 STEP 3: OPEN RAZORPAY
     const options = {
-      key:      orderData.key,
-      amount:   orderData.amount,
+      key: orderData.key,
+      amount: orderData.amount,
       currency: orderData.currency,
       order_id: orderData.orderId,
 
@@ -454,9 +473,9 @@ async function pay() {
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              razorpay_order_id:   response.razorpay_order_id,
+              razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature:  response.razorpay_signature,
+              razorpay_signature: response.razorpay_signature,
               registrationId,
             }),
           });
@@ -464,7 +483,29 @@ async function pay() {
           const verifyData = await verifyRes.json();
           if (!verifyRes.ok) throw new Error(verifyData.message);
 
-          showMsg("Payment successful! Redirecting… 🎉", "success");
+          // 🔥 NEW: SEND TICKET EMAIL
+          try {
+            const ticket = verifyData.ticket;
+
+            await emailjs.send(
+              "service_2qmrv2n",
+              "template_gxm4bjk",   // ⚠️ your template
+              {
+                to_email: ticket.email,
+                eventName: ticket.eventName,
+                date: ticket.date,
+                location: ticket.location,
+                ticketName: ticket.ticketName,
+                ticketCode: ticket.ticketCode,
+                qrImage: ticket.qrImage
+              }
+            );
+          } catch (err) {
+            console.error("Ticket email failed:", err);
+          }
+
+          showMsg("Payment successful! Ticket sent to email 🎟️", "success");
+
           setTimeout(() => {
             window.location.href = "/pages/my-bookings.html";
           }, 1500);
@@ -524,14 +565,14 @@ function showMsg(text, type = "error") {
   const el = document.getElementById("msg");
   if (!el) return;
   el.textContent = text;
-  el.className   = `pay-msg ${type}`;
+  el.className = `pay-msg ${type}`;
 }
 
 function clearMsg() {
   const el = document.getElementById("msg");
   if (!el) return;
   el.textContent = "";
-  el.className   = "pay-msg";
+  el.className = "pay-msg";
 }
 
 /* ══════════════════════════════════════════

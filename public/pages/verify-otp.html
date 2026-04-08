@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Verify OTP — EventZ</title>
   <link rel="stylesheet" href="/css/auth.css">
 </head>
+
 <body>
 
   <canvas id="particles"></canvas>
@@ -13,7 +15,14 @@
   <!-- Branding -->
   <div class="branding">
     <div class="brand-logo">
-      <div class="brand-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#060d1f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg></div>
+      <div class="brand-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#060d1f"
+          stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path
+            d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z" />
+          <path d="M13 5v2" />
+          <path d="M13 17v2" />
+          <path d="M13 11v2" />
+        </svg></div>
       <h1>EventZ</h1>
     </div>
     <div class="brand-divider"></div>
@@ -62,8 +71,12 @@
     <p id="msg"></p>
 
   </form>
-
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    emailjs.init("T93Sp9ZO2gb2GDVUo");
+  </script>
   <script src="/js/particles.js"></script>
   <script src="/js/verifyotp.js"></script>
 </body>
+
 </html>

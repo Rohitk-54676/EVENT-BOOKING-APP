@@ -176,7 +176,7 @@ async function loadEvent() {
     document.getElementById("continueBtn").onclick = handleContinue;
 
     /* ── Page title ── */
-    document.title = `${event.title} — EventZ`;
+    document.title = `${event.title} — EventPulse`;
 
   } catch (err) {
     console.error(err);
@@ -208,7 +208,7 @@ function handleContinue() {
 ══════════════════════════════════════════ */
 function shareEvent(platform) {
   const url   = encodeURIComponent(window.location.href);
-  const title = encodeURIComponent(document.getElementById("title")?.innerText || "Check out this event on EventZ!");
+  const title = encodeURIComponent(document.getElementById("title")?.innerText || "Check out this event on EventPulse!");
 
   const links = {
     whatsapp: `https://wa.me/?text=${title}%20${url}`,

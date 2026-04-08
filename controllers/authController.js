@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import pool from "../config/db.js";
 import generateOTP from "../utils/generateOTP.js";
-import sendOTP from "../utils/sendEmail.js";
 import jwt from "jsonwebtoken";
 
 /* ---------------- REGISTER ---------------- */
@@ -9,18 +8,11 @@ import jwt from "jsonwebtoken";
 export const register = async (req, res) => {
   const { name, email, phone, password } = req.body;
 
-  // ✅ Basic validation
-  // if (!name || !email || !phone || !password) {
-  //   return res.status(400).json({ message: "All fields required" });
-  // }
-
   try {
-    // Clean expired OTPs
     await pool.query(
       "DELETE FROM otp_verifications WHERE expiry_time < NOW()"
     );
 
-    // Check if user exists
     const existingUser = await pool.query(
       "SELECT * FROM users WHERE email=$1",
       [email]
@@ -33,7 +25,6 @@ export const register = async (req, res) => {
       });
     }
 
-    // Remove old OTP for same email
     await pool.query(
       "DELETE FROM otp_verifications WHERE email=$1",
       [email]
@@ -51,9 +42,11 @@ export const register = async (req, res) => {
       [email, hashedOTP, expiry, name, phone, hashedPassword]
     );
 
-    await sendOTP(email, otp);
-
-    res.json({ message: "OTP sent successfully" });
+    // 🔥 IMPORTANT: send OTP to frontend instead of email
+    res.json({
+      message: "OTP generated",
+      otp: otp
+    });
 
   } catch (err) {
     console.error(err);
@@ -86,7 +79,6 @@ export const verifyOTP = async (req, res) => {
 
     const record = result.rows[0];
 
-    // 🚫 brute force protection
     if (record.attempts >= 3) {
       return res.status(400).json({ message: "Too many attempts" });
     }
@@ -105,13 +97,11 @@ export const verifyOTP = async (req, res) => {
       return res.status(400).json({ message: "OTP expired" });
     }
 
-    // Create user
     await pool.query(
       "INSERT INTO users (name, email, phone, password, is_verified) VALUES ($1,$2,$3,$4,true)",
       [record.name, record.email, record.phone, record.password]
     );
 
-    // Delete OTP
     await pool.query(
       "DELETE FROM otp_verifications WHERE email=$1",
       [email]
@@ -157,6 +147,7 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "24h" }
     );
+
     res.json({
       message: "Login successful",
       token,
@@ -174,10 +165,6 @@ export const login = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: "Email required" });
-  }
-
   try {
     const user = await pool.query(
       "SELECT * FROM users WHERE email=$1",
@@ -188,7 +175,6 @@ export const forgotPassword = async (req, res) => {
       return res.status(400).json({ message: "User not found" });
     }
 
-    // Remove old OTP
     await pool.query(
       "DELETE FROM otp_verifications WHERE email=$1",
       [email]
@@ -205,9 +191,10 @@ export const forgotPassword = async (req, res) => {
       [email, hashedOTP, expiry]
     );
 
-    await sendOTP(email, otp);
-
-    res.json({ message: "OTP sent for password reset" });
+    res.json({
+      message: "OTP generated",
+      otp: otp
+    });
 
   } catch (err) {
     console.error(err);
@@ -219,10 +206,6 @@ export const forgotPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   const { email, otp, newPassword } = req.body;
-
-  if (!email || !otp || !newPassword) {
-    return res.status(400).json({ message: "Missing fields" });
-  }
 
   try {
     const result = await pool.query(
@@ -274,17 +257,12 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-/////////RRESEND_OTP??????????////////
+/* ---------------- RESEND OTP ---------------- */
 
 export const resendOTP = async (req, res) => {
   const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: "Email required" });
-  }
-
   try {
-    // 🔥 Get existing record (important)
     const existing = await pool.query(
       "SELECT * FROM otp_verifications WHERE email=$1",
       [email]
@@ -296,14 +274,10 @@ export const resendOTP = async (req, res) => {
       });
     }
 
-    const record = existing.rows[0];
-
-    // 🔥 Generate new OTP
     const otp = generateOTP();
     const hashedOTP = await bcrypt.hash(otp, 10);
     const expiry = new Date(Date.now() + 5 * 60 * 1000);
 
-    // 🔥 UPDATE instead of INSERT (critical)
     await pool.query(
       `UPDATE otp_verifications 
        SET otp=$1, expiry_time=$2, attempts=0 
@@ -311,9 +285,10 @@ export const resendOTP = async (req, res) => {
       [hashedOTP, expiry, email]
     );
 
-    await sendOTP(email, otp);
-
-    res.json({ message: "OTP resent successfully" });
+    res.json({
+      message: "OTP regenerated",
+      otp: otp
+    });
 
   } catch (err) {
     console.error("RESEND OTP ERROR:", err);

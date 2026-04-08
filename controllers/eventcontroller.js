@@ -430,16 +430,19 @@ export const sendDeleteOTP = async (req, res) => {
 
     const otp = generateOTP();
 
+    // store OTP
     otpStore[adminId] = { otp, eventId };
 
-    // 🔥 you already have sendEmail util
-    await sendOTP(req.user.email, otp);
-
-    res.json({ message: "OTP sent to email" });
+    // ✅ SEND OTP TO FRONTEND INSTEAD OF EMAIL
+    res.json({
+      message: "OTP generated",
+      otp,                 // 🔥 important
+      email: req.user.email // optional (for frontend)
+    });
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to send OTP" });
+    res.status(500).json({ message: "Failed to generate OTP" });
   }
 };
 

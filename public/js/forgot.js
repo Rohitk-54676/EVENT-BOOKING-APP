@@ -20,6 +20,7 @@ form.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
+
     const data = await res.json();
 
     if (!res.ok) {
@@ -28,7 +29,28 @@ form.addEventListener("submit", async (e) => {
       return;
     }
 
+    // 🔥 ONLY CHANGE STARTS HERE
+    const otp = data.otp;
+
+    try {
+      await emailjs.send(
+        "service_2qmrv2n",
+        "template_21nmnv6",   // ⚠️ replace
+        {
+          to_email: email,
+          otp: otp,
+        }
+      );
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      showMessage("OTP generated but email failed", "var(--error)");
+      setLoading(false);
+      return;
+    }
+    // 🔥 ONLY CHANGE ENDS HERE
+
     localStorage.setItem("resetEmail", email);
+
     showMessage("OTP sent! Redirecting…", "var(--success)");
     setTimeout(() => { window.location.href = "reset-password.html"; }, 1000);
 

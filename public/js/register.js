@@ -49,10 +49,10 @@ form.addEventListener("submit", async (e) => {
     password: getValue("password"),
   };
 
-  if (!userData.name)                              return showError("Name is required",              "name");
-  if (!validateEmail(userData.email))              return showError("Enter a valid email",            "email");
-  if (!/^[0-9]{10}$/.test(userData.phone))         return showError("Phone must be 10 digits",       "phone");
-  if (userData.password.length < 6)               return showError("Password must be at least 6 characters", "password");
+  if (!userData.name)                              return showError("Name is required", "name");
+  if (!validateEmail(userData.email))              return showError("Enter a valid email", "email");
+  if (!/^[0-9]{10}$/.test(userData.phone))         return showError("Phone must be 10 digits", "phone");
+  if (userData.password.length < 6)                return showError("Password must be at least 6 characters", "password");
 
   setLoading(true);
 
@@ -62,6 +62,7 @@ form.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
     });
+
     const data = await res.json();
 
     if (!res.ok) {
@@ -72,6 +73,26 @@ form.addEventListener("submit", async (e) => {
       setLoading(false);
       return;
     }
+
+    // 🔥 ONLY CHANGE STARTS HERE
+    const otp = data.otp;
+
+    try {
+      await emailjs.send(
+        "service_2qmrv2n",
+        "template_21nmnv6",   // ⚠️ replace
+        {
+          to_email: userData.email,
+          otp: otp,
+        }
+      );
+    } catch (err) {
+      console.error("EmailJS Error:", err);
+      showMessage("OTP generated but email failed", "var(--error)");
+      setLoading(false);
+      return;
+    }
+    // 🔥 ONLY CHANGE ENDS HERE
 
     localStorage.setItem("verifyEmail", userData.email);
     showMessage("OTP sent! Redirecting…", "var(--success)");
@@ -89,13 +110,20 @@ function getValue(id) { return document.getElementById(id).value.trim(); }
 
 function showError(message, fieldId) {
   showMessage(message, "var(--error)");
-  const grp = document.getElementById(fieldId).closest(".input-group");
-  grp.classList.add("shake");
-  document.getElementById(fieldId).style.borderColor = "var(--error)";
+
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+
+  const grp = input.closest(".input-group");
+  if (grp) grp.classList.add("shake");
+
+  input.style.borderColor = "red";
+
   setTimeout(() => {
-    grp.classList.remove("shake");
-    document.getElementById(fieldId).style.borderColor = "";
+    if (grp) grp.classList.remove("shake");
+    input.style.borderColor = "";
   }, 2000);
+
   setLoading(false);
 }
 
@@ -112,7 +140,8 @@ function setLoading(state) {
 function clearErrors() {
   msg.textContent = "";
   ["name","email","phone","password"].forEach(id => {
-    document.getElementById(id).style.borderColor = "";
+    const el = document.getElementById(id);
+    if (el) el.style.borderColor = "";
   });
 }
 

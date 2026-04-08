@@ -402,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // TODO: hook to your backend
-    showToast("🎉 You're in! Welcome to EventZ.");
+    showToast("🎉 You're in! Welcome to EventPulse.");
     emailEl.value = "";
   };
 

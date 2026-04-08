@@ -2,9 +2,9 @@ import nodemailer from "nodemailer";
 import "dotenv/config";
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp-relay.brevo.com",
   port: 587,
-  secure: false, // IMPORTANT
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
@@ -12,12 +12,19 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendOTP = async (email, otp) => {
-  await transporter.sendMail({
-    from: "mr.darkman.only@gmail.com",
-    to: email,
-    subject: "OTP Verification",
-    text: `Your OTP is ${otp}`,
-  });
+  try {
+    await transporter.sendMail({
+      from: `"Event App" <mr.darkman.only@gmail.com>`,
+      to: email, // ✅ REAL USER EMAIL (not test)
+      subject: "OTP Verification",
+      text: `Your OTP is ${otp}`,
+    });
+
+    console.log("OTP email sent to:", email);
+
+  } catch (err) {
+    console.error("Email Error:", err);
+  }
 };
 
 export default sendOTP;

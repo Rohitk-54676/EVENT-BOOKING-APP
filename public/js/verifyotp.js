@@ -140,12 +140,32 @@ resendBtn.addEventListener("click", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
     });
+
     const data = await res.json();
 
     if (!res.ok) {
       showMessage(data.message || "Please try again", "var(--error)");
       return;
     }
+
+    // 🔥 NEW PART (ONLY ADD THIS)
+    const otp = data.otp;
+
+    try {
+      await emailjs.send(
+        "service_2qmrv2n",
+        "template_21nmnv6",   // ⚠️ replace
+        {
+          to_email: email,
+          otp: otp,
+        }
+      );
+    } catch (err) {
+      console.error("Email resend failed:", err);
+      showMessage("OTP generated but email failed", "var(--error)");
+      return;
+    }
+    // 🔥 END
 
     showMessage("OTP resent successfully!", "var(--success)");
     boxes.forEach(b => b.value = "");

@@ -288,10 +288,35 @@ async function editEvent(id) {
 
 async function startDelete(id) {
   const token = localStorage.getItem("token");
-  await fetch(`/api/events/${id}/send-delete-otp`, {
+
+  const res = await fetch(`/api/events/${id}/send-delete-otp`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    return alert(data.message || "Failed to send OTP");
+  }
+
+  // 🔥 SEND EMAIL USING EMAILJS
+  try {
+    await emailjs.send(
+      "service_2qmrv2n",
+      "template_21nmnv6", // ⚠️ same OTP template
+      {
+        to_email: data.email,
+        otp: data.otp,
+      }
+    );
+  } catch (err) {
+    console.error("Delete OTP email failed:", err);
+    alert("OTP generated but email failed");
+    return;
+  }
+
+  // show input UI
   document.getElementById(`otp-${id}`).style.display = "flex";
 }
 

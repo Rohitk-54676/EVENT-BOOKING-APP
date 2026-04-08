@@ -56,7 +56,9 @@ cron.schedule("* * * * *", async () => {
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/pages/index.html"));
 });
-
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 // Protected route (test)
 app.get("/api/protected", authMiddleware, (req, res) => {
   res.json({

@@ -1182,3 +1182,59 @@ body {
   .app-badges{ flex-direction:column; }
   .app-badge{ justify-content:center; }
 }
+
+
+/* ── EventPulse brand name responsive fix ── */
+/* Logo shrinks gracefully, navbar stays intact on all screen sizes */
+
+.logo { font-size: clamp(1.1rem, 3.5vw, 1.55rem); letter-spacing: -0.3px; }
+
+.navbar { padding: 0 4%; gap: 10px; }
+
+.nav-right { gap: 8px; flex-shrink: 0; }
+
+.btn-nav {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-nav.filled { padding: 7px 14px; }
+
+@media (max-width: 768px) {
+  .logo { font-size: 1.25rem; letter-spacing: -0.5px; }
+  .nav-right { gap: 6px; }
+  .btn-nav { padding: 6px 10px; font-size: 0.78rem; }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 1.1rem; }
+  .navbar { padding: 0 3%; height: 60px; }
+  .btn-nav { padding: 6px 9px; font-size: 0.76rem; }
+  .nav-right { gap: 5px; }
+}
+
+
+/* ── Index page hero + footer brand fix for EventPulse ── */
+.footer-brand .logo { font-size: clamp(1.1rem, 3vw, 1.5rem); }
+
+@media (max-width: 560px) {
+  .hero h1 { letter-spacing: -1px; }
+  .hero-cta { gap: 10px; }
+  .btn-hero-primary, .btn-hero-secondary {
+    padding: 13px 28px;
+    font-size: 0.93rem;
+  }
+  .stats-inner { grid-template-columns: repeat(2,1fr); gap: 10px; }
+  .stat-num { font-size: 1.6rem; }
+  .newsletter-form { flex-direction: column; border-radius: 14px; padding: 14px; }
+  .newsletter-form input { padding: 4px 2px; }
+  .btn-subscribe { border-radius: 10px; width: 100%; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-bottom { flex-direction: column; text-align: center; gap: 8px; }
+  .footer-legal { flex-wrap: wrap; justify-content: center; gap: 14px; }
+  /* Mobile auth CTA buttons */
+  .cta-btns { flex-direction: column; align-items: center; }
+  .btn-primary, .btn-secondary { width: 100%; max-width: 280px; justify-content: center; text-align: center; }
+}

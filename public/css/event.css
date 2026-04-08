@@ -571,3 +571,47 @@ body {
   .share-btn   { justify-content:center; }
   .meta-chip   { font-size:.74rem; }
 }
+
+
+/* ── EventPulse brand name responsive fix ── */
+/* Logo shrinks gracefully, navbar stays intact on all screen sizes */
+
+.logo { font-size: clamp(1.1rem, 3.5vw, 1.55rem); letter-spacing: -0.3px; }
+
+.navbar { padding: 0 4%; gap: 10px; }
+
+.nav-right { gap: 8px; flex-shrink: 0; }
+
+.btn-nav {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-nav.filled { padding: 7px 14px; }
+
+@media (max-width: 768px) {
+  .logo { font-size: 1.25rem; letter-spacing: -0.5px; }
+  .nav-right { gap: 6px; }
+  .btn-nav { padding: 6px 10px; font-size: 0.78rem; }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 1.1rem; }
+  .navbar { padding: 0 3%; height: 60px; }
+  .btn-nav { padding: 6px 9px; font-size: 0.76rem; }
+  .nav-right { gap: 5px; }
+}
+
+
+/* ── Event page mobile fixes ── */
+@media (max-width: 420px) {
+  .hero-title { font-size: 1.3rem; }
+  .meta-chip { font-size: 0.7rem; padding: 5px 10px; }
+  .share-btns { flex-direction: column; }
+  .share-btn { justify-content: center; }
+  .event-body { margin-top: -28px; }
+  .detail-card { padding: 16px; }
+  .ticket-panel-inner { padding: 16px; }
+}

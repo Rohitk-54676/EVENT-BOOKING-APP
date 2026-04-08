@@ -221,3 +221,46 @@ textarea.invalid{border-color:var(--red)!important;box-shadow:0 0 0 3px rgba(255
   .field-row{grid-template-columns:1fr}
   .contact-form{padding:22px}
 }
+
+
+/* ── EventPulse brand name responsive fix ── */
+/* Logo shrinks gracefully, navbar stays intact on all screen sizes */
+
+.logo { font-size: clamp(1.1rem, 3.5vw, 1.55rem); letter-spacing: -0.3px; }
+
+.navbar { padding: 0 4%; gap: 10px; }
+
+.nav-right { gap: 8px; flex-shrink: 0; }
+
+.btn-nav {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-nav.filled { padding: 7px 14px; }
+
+@media (max-width: 768px) {
+  .logo { font-size: 1.25rem; letter-spacing: -0.5px; }
+  .nav-right { gap: 6px; }
+  .btn-nav { padding: 6px 10px; font-size: 0.78rem; }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 1.1rem; }
+  .navbar { padding: 0 3%; height: 60px; }
+  .btn-nav { padding: 6px 9px; font-size: 0.76rem; }
+  .nav-right { gap: 5px; }
+}
+
+
+/* ── Contact page mobile fixes ── */
+@media (max-width: 420px) {
+  .field-row { grid-template-columns: 1fr; }
+  .contact-form { padding: 18px; }
+  .social-row { flex-wrap: wrap; }
+  .page-hero h1 { letter-spacing: -0.8px; }
+  .newsletter-form { flex-direction: column; border-radius: 12px; padding: 10px; }
+  .btn-subscribe { border-radius: 8px; width: 100%; }
+}

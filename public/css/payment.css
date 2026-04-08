@@ -292,3 +292,49 @@ body{
   .step-circle{width:30px;height:30px;font-size:.72rem}
   .step-line{min-width:16px;max-width:40px}
 }
+
+
+/* ── EventPulse brand name responsive fix ── */
+/* Logo shrinks gracefully, navbar stays intact on all screen sizes */
+
+.logo { font-size: clamp(1.1rem, 3.5vw, 1.55rem); letter-spacing: -0.3px; }
+
+.navbar { padding: 0 4%; gap: 10px; }
+
+.nav-right { gap: 8px; flex-shrink: 0; }
+
+.btn-nav {
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-nav.filled { padding: 7px 14px; }
+
+@media (max-width: 768px) {
+  .logo { font-size: 1.25rem; letter-spacing: -0.5px; }
+  .nav-right { gap: 6px; }
+  .btn-nav { padding: 6px 10px; font-size: 0.78rem; }
+}
+
+@media (max-width: 480px) {
+  .logo { font-size: 1.1rem; }
+  .navbar { padding: 0 3%; height: 60px; }
+  .btn-nav { padding: 6px 9px; font-size: 0.76rem; }
+  .nav-right { gap: 5px; }
+}
+
+
+/* ── Payment page mobile fixes ── */
+@media (max-width: 420px) {
+  .field-grid { grid-template-columns: 1fr; }
+  .steps-bar { padding: 0 2% 24px; }
+  .step span { display: none; }
+  .step-circle { width: 28px; height: 28px; font-size: 0.7rem; }
+  .step-line { min-width: 12px; max-width: 24px; }
+  .members-panel { padding: 16px; }
+  .btn-pay { font-size: 0.88rem; }
+  .trust-row { gap: 10px; }
+  .trust-item { font-size: 0.68rem; }
+}

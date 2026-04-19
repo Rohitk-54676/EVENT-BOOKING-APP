@@ -1,8 +1,4 @@
-/* ══════════════════════════════════════════
-   SCAN.JS — All original logic preserved.
-   Navbar + logout added. showMsg updated
-   to match new .scan-msg CSS classes.
-══════════════════════════════════════════ */
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const navbar = document.getElementById("navbar");
@@ -19,11 +15,7 @@ function logout() {
   window.location.href = "/pages/login.html";
 }
 
-/* ════════════════════════════════════════
-   YOUR ORIGINAL CODE BELOW — UNCHANGED
-   (only showMsg / clearMsg updated to use
-    new .scan-msg CSS instead of old classes)
-════════════════════════════════════════ */
+
 
 const token = localStorage.getItem("token");
 let scanner = null;
@@ -66,7 +58,7 @@ async function verify(codeInput = null) {
   }
 }
 
-// Show styled message — updated for .scan-msg classes
+
 function showMsg(el, text, type) {
   el.textContent = text;
   el.className   = `scan-msg ${type}`;

@@ -1,16 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  /* ══════════════════════════════════════════
-     GLOBALS
-  ══════════════════════════════════════════ */
+
   const token          = localStorage.getItem("token");
   const userArea       = document.getElementById("userArea");
   const latestContainer= document.getElementById("latest-events");
   let eventsData       = [];
 
-  /* ══════════════════════════════════════════
-     DECODE JWT → user object
-  ══════════════════════════════════════════ */
+
   function getUser() {
     if (!token) return null;
     try { return JSON.parse(atob(token.split(".")[1])); }
@@ -18,9 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   const user = getUser();
 
-  /* ══════════════════════════════════════════
-     NAVBAR — scroll + hamburger
-  ══════════════════════════════════════════ */
+
   const navbar    = document.getElementById("navbar");
   const hamburger = document.getElementById("hamburger");
   const mobileMenu= document.getElementById("mobileMenu");
@@ -42,9 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ══════════════════════════════════════════
-     USER AREA render (desktop + mobile)
-  ══════════════════════════════════════════ */
+
   function renderUser() {
     if (!userArea) return;
     const mobileAuth = document.getElementById("mobileAuth");
@@ -84,9 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ══════════════════════════════════════════
-     CLOSE DROPDOWN ON OUTSIDE CLICK
-  ══════════════════════════════════════════ */
+
   document.addEventListener("click", (e) => {
     const dd = document.getElementById("dropdown");
     if (dd && !e.target.closest(".profile-wrapper")) {
@@ -94,9 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ══════════════════════════════════════════
-     LOAD LATEST 4 EVENTS
-  ══════════════════════════════════════════ */
+
   async function loadLatestEvents() {
     showSkeletons();
 
@@ -139,9 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ══════════════════════════════════════════
-     BUILD EVENT CARD
-  ══════════════════════════════════════════ */
+
   function buildCard(e, index) {
     const card = document.createElement("div");
     card.className = "event-card";
@@ -188,9 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return card;
   }
 
-  /* ══════════════════════════════════════════
-     3D TILT
-  ══════════════════════════════════════════ */
+
   function onTilt(e) {
     const card = e.currentTarget;
     const r    = card.getBoundingClientRect();
@@ -202,9 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function offTilt(e) { e.currentTarget.style.transform = ""; }
 
-  /* ══════════════════════════════════════════
-     SKELETON LOADER
-  ══════════════════════════════════════════ */
+
   function showSkeletons() {
     if (!latestContainer) return;
     latestContainer.innerHTML = "";
@@ -226,9 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* ══════════════════════════════════════════
-     SEARCH (your original logic, improved UI)
-  ══════════════════════════════════════════ */
+
   const searchInput  = document.getElementById("searchInput");
   const searchResults= document.getElementById("searchResults");
 
@@ -286,9 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ══════════════════════════════════════════
-     HERO CANVAS — star field
-  ══════════════════════════════════════════ */
+
   function initHeroCanvas() {
     const canvas = document.getElementById("heroCanvas");
     if (!canvas) return;
@@ -334,9 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", resize);
   }
 
-  /* ══════════════════════════════════════════
-     STATS COUNTER ANIMATION
-  ══════════════════════════════════════════ */
+
   function animateStats() {
     const items = document.querySelectorAll(".stat-num[data-target]");
     const observer = new IntersectionObserver((entries) => {
@@ -366,9 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
     items.forEach(el => observer.observe(el));
   }
 
-  /* ══════════════════════════════════════════
-     SCROLL REVEAL
-  ══════════════════════════════════════════ */
+
   function initScrollReveal() {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -388,9 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* ══════════════════════════════════════════
-     NEWSLETTER
-  ══════════════════════════════════════════ */
+
   window.subscribeNewsletter = () => {
     const emailEl = document.getElementById("newsletterEmail");
     if (!emailEl) return;
@@ -406,9 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
     emailEl.value = "";
   };
 
-  /* ══════════════════════════════════════════
-     TOAST
-  ══════════════════════════════════════════ */
   let toastTimer;
   function showToast(msg) {
     const t = document.getElementById("toast");
@@ -419,17 +388,12 @@ document.addEventListener("DOMContentLoaded", () => {
     toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
   }
 
-  /* ══════════════════════════════════════════
-     SMOOTH SCROLL helper
-  ══════════════════════════════════════════ */
+
   window.scrollTo = function(id) {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  /* ══════════════════════════════════════════
-     FORMAT HELPERS
-  ══════════════════════════════════════════ */
   function formatDate(str) {
     if (!str) return "Date TBA";
     try {
@@ -445,9 +409,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return isNaN(n) ? String(p) : "₹" + n.toLocaleString("en-IN");
   }
 
-  /* ══════════════════════════════════════════
-     GLOBAL NAVIGATORS (your original functions)
-  ══════════════════════════════════════════ */
+
   window.goLogin      = () => window.location.href = "/pages/login.html";
   window.goBookings   = () => window.location.href = "/pages/my-bookings.html";
   window.goAdmin      = () => window.location.href = "/pages/admin.html";
@@ -466,9 +428,7 @@ document.addEventListener("DOMContentLoaded", () => {
     d.style.display = d.style.display === "block" ? "none" : "block";
   };
 
-  /* ══════════════════════════════════════════
-     BOOT
-  ══════════════════════════════════════════ */
+
   renderUser();
   loadLatestEvents();
   initHeroCanvas();
@@ -477,9 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initTicker();
   initCities();
 
-  /* ══════════════════════════════════════════
-     TICKER MARQUEE
-  ══════════════════════════════════════════ */
+
   function initTicker() {
     const track = document.getElementById("tickerTrack");
     if (!track) return;
@@ -495,9 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ).join("");
   }
 
-  /* ══════════════════════════════════════════
-     CITY EXPLORER
-  ══════════════════════════════════════════ */
+
   function initCities() {
     const grid = document.getElementById("citiesGrid");
     if (!grid) return;

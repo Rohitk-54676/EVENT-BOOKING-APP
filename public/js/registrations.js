@@ -1,7 +1,4 @@
-/* ══════════════════════════════════════════
-   REGISTRATIONS.JS — All original logic
-   preserved. Navbar + logout added.
-══════════════════════════════════════════ */
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const navbar = document.getElementById("navbar");
@@ -18,9 +15,7 @@ function logout() {
   window.location.href = "/pages/login.html";
 }
 
-/* ════════════════════════════════════════
-   YOUR ORIGINAL CODE BELOW — UNCHANGED
-════════════════════════════════════════ */
+
 
 const token   = localStorage.getItem("token");
 const params  = new URLSearchParams(window.location.search);
@@ -113,7 +108,7 @@ function renderTable(data) {
   regTable.classList.remove("hidden");
 }
 
-/* ── Search filter ── */
+
 document.getElementById("searchInput").addEventListener("input", function () {
   const query      = this.value.toLowerCase().trim();
   const emptyState = document.getElementById("emptyState");
@@ -142,7 +137,7 @@ document.getElementById("searchInput").addEventListener("input", function () {
   }
 });
 
-/* ── Export Excel (reuse from admin.js) ── */
+
 async function downloadExcel() {
   const res  = await fetch(`/api/events/${eventId}/export`, {
     headers: { Authorization: `Bearer ${token}` },

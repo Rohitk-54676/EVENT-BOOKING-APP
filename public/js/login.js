@@ -6,7 +6,7 @@ const registerLink= document.getElementById("registerLink");
 
 const API_URL = "/api/auth";
 
-/* ── Toggle password visibility ── */
+
 function togglePass(inputId, toggleBtn) {
   const input = document.getElementById(inputId);
   const show  = input.type === 'password';

@@ -6,9 +6,7 @@ const API_URL = "/api/events";
 
 let allEvents = [];
 
-/* ══════════════════════════════════════════
-   BOOT
-══════════════════════════════════════════ */
+
 document.addEventListener("DOMContentLoaded", () => {
   initNavbar();
   initUserArea();
@@ -16,9 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadAllEvents();
 });
 
-/* ══════════════════════════════════════════
-   NAVBAR — scroll + hamburger
-══════════════════════════════════════════ */
+
 function initNavbar() {
   const navbar    = document.getElementById("navbar");
   const hamburger = document.getElementById("hamburger");
@@ -44,9 +40,7 @@ function initNavbar() {
   });
 }
 
-/* ══════════════════════════════════════════
-   USER AREA — desktop + mobile
-══════════════════════════════════════════ */
+
 function initUserArea() {
   const area       = document.getElementById("userArea");
   const mobileAuth = document.getElementById("mobileAuth");
@@ -76,9 +70,7 @@ function logout() {
   window.location.href = "/pages/login.html";
 }
 
-/* ══════════════════════════════════════════
-   SEARCH
-══════════════════════════════════════════ */
+
 function initSearch() {
   let timer;
   searchInput.addEventListener("input", () => {
@@ -107,9 +99,7 @@ function applySearch() {
   renderEvents(results);
 }
 
-/* ══════════════════════════════════════════
-   LOAD FROM SERVER
-══════════════════════════════════════════ */
+
 async function loadAllEvents() {
   showSkeletons(6);
 
@@ -128,9 +118,7 @@ async function loadAllEvents() {
   }
 }
 
-/* ══════════════════════════════════════════
-   RENDER
-══════════════════════════════════════════ */
+
 function renderEvents(events) {
   container.innerHTML = "";
   countBadge.textContent = `${events.length} event${events.length !== 1 ? "s" : ""}`;
@@ -143,9 +131,7 @@ function renderEvents(events) {
   events.forEach((e, i) => container.appendChild(buildCard(e, i)));
 }
 
-/* ══════════════════════════════════════════
-   BUILD CARD
-══════════════════════════════════════════ */
+
 function buildCard(e, index) {
   const card = document.createElement("div");
   card.className = "event-card";
@@ -215,9 +201,6 @@ function buildCard(e, index) {
   return card;
 }
 
-/* ══════════════════════════════════════════
-   3D TILT
-══════════════════════════════════════════ */
 function onTilt(e) {
   const card  = e.currentTarget;
   const rect  = card.getBoundingClientRect();
@@ -229,9 +212,6 @@ function onTilt(e) {
 
 function offTilt(e) { e.currentTarget.style.transform = ""; }
 
-/* ══════════════════════════════════════════
-   WISHLIST
-══════════════════════════════════════════ */
 function getWishlist()     { return JSON.parse(localStorage.getItem("wishlist") || "[]"); }
 function isWishlisted(id)  { return getWishlist().includes(String(id)); }
 
@@ -254,9 +234,7 @@ function toggleWishlist(e, id, btn) {
   localStorage.setItem("wishlist", JSON.stringify(list));
 }
 
-/* ══════════════════════════════════════════
-   SKELETON
-══════════════════════════════════════════ */
+
 function showSkeletons(n) {
   container.innerHTML = "";
   countBadge.textContent = "Loading…";
@@ -278,9 +256,7 @@ function showSkeletons(n) {
   }
 }
 
-/* ══════════════════════════════════════════
-   EMPTY STATE
-══════════════════════════════════════════ */
+
 function showEmpty(title, sub) {
   container.innerHTML = `
     <div class="empty-state">
@@ -290,9 +266,7 @@ function showEmpty(title, sub) {
     </div>`;
 }
 
-/* ══════════════════════════════════════════
-   TOAST
-══════════════════════════════════════════ */
+
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById("toast");
@@ -302,16 +276,12 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
 }
 
-/* ══════════════════════════════════════════
-   NAVIGATE
-══════════════════════════════════════════ */
+
 function viewEvent(id) {
   window.location.href = `/pages/event.html?id=${id}`;
 }
 
-/* ══════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════ */
+
 function formatDate(str) {
   if (!str) return "Date TBA";
   try {

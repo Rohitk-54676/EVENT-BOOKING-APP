@@ -10,9 +10,7 @@ const errorEl   = document.getElementById("error");
 const contentEl = document.getElementById("eventContent");
 const footerEl  = document.getElementById("pageFooter");
 
-/* ══════════════════════════════════════════
-   NAVBAR
-══════════════════════════════════════════ */
+
 function initNavbar() {
   const navbar    = document.getElementById("navbar");
   const hamburger = document.getElementById("hamburger");
@@ -36,9 +34,7 @@ function initNavbar() {
   }
 }
 
-/* ══════════════════════════════════════════
-   USER AREA
-══════════════════════════════════════════ */
+
 function initUserArea() {
   const area       = document.getElementById("userArea");
   const mobileAuth = document.getElementById("mobileAuth");
@@ -73,9 +69,7 @@ function logout() {
   window.location.href = "/pages/login.html";
 }
 
-/* ══════════════════════════════════════════
-   LOAD EVENT  (your original logic intact)
-══════════════════════════════════════════ */
+
 async function loadEvent() {
   try {
     const options = {};
@@ -185,9 +179,7 @@ async function loadEvent() {
   }
 }
 
-/* ══════════════════════════════════════════
-   CONTINUE → PAYMENT  (your original logic)
-══════════════════════════════════════════ */
+
 function handleContinue() {
   if (!selectedTicket) {
     showMsg("Please select a ticket first", "error");
@@ -203,9 +195,7 @@ function handleContinue() {
   window.location.href = `/pages/payment.html?id=${eventId}&ticket=${selectedTicket}`;
 }
 
-/* ══════════════════════════════════════════
-   SHARE
-══════════════════════════════════════════ */
+
 function shareEvent(platform) {
   const url   = encodeURIComponent(window.location.href);
   const title = encodeURIComponent(document.getElementById("title")?.innerText || "Check out this event on EventPulse!");
@@ -227,9 +217,7 @@ function copyLink() {
   });
 }
 
-/* ══════════════════════════════════════════
-   HELPERS  (your original functions)
-══════════════════════════════════════════ */
+
 function showMsg(text, type) {
   const msg    = document.getElementById("msg");
   msg.innerText  = text;
@@ -242,9 +230,7 @@ function clearMsg() {
   msg.className  = "msg-text";
 }
 
-/* ══════════════════════════════════════════
-   BOOT
-══════════════════════════════════════════ */
+
 document.addEventListener("DOMContentLoaded", () => {
   initNavbar();
   initUserArea();

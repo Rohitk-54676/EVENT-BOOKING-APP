@@ -1,8 +1,6 @@
 const token = localStorage.getItem("token");
 
-/* ══════════════════════════════════════════
-   SVG ICONS
-══════════════════════════════════════════ */
+
 const icons = {
   calendar: `<svg class="icon icon-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
   location: `<svg class="icon icon-location" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
@@ -16,9 +14,6 @@ const statusLabels = { active:"Active", used:"Used", cancelled:"Cancelled" };
 let allBookings = [];
 let activeFilter = "all";
 
-/* ══════════════════════════════════════════
-   NAVBAR
-══════════════════════════════════════════ */
 function initNavbar() {
   const navbar    = document.getElementById("navbar");
   const hamburger = document.getElementById("hamburger");
@@ -42,9 +37,7 @@ function initNavbar() {
   }
 }
 
-/* ══════════════════════════════════════════
-   USER AREA
-══════════════════════════════════════════ */
+
 function initUserArea() {
   const area       = document.getElementById("userArea");
   const mobileAuth = document.getElementById("mobileAuth");
@@ -79,9 +72,7 @@ function logout() {
   window.location.href = "/pages/login.html";
 }
 
-/* ══════════════════════════════════════════
-   FILTER TABS
-══════════════════════════════════════════ */
+
 function initFilters() {
   document.getElementById("filterRow").addEventListener("click", (e) => {
     const tab = e.target.closest(".ftab");
@@ -95,9 +86,7 @@ function initFilters() {
   });
 }
 
-/* ══════════════════════════════════════════
-   STATS
-══════════════════════════════════════════ */
+
 function updateStats(bookings) {
   const statsEl = document.getElementById("bookingStats");
   if (!statsEl) return;
@@ -111,9 +100,7 @@ function updateStats(bookings) {
   document.getElementById("statCancelled").textContent = bookings.filter(b => b.status === "cancelled").length;
 }
 
-/* ══════════════════════════════════════════
-   FORMAT DATE  (your original)
-══════════════════════════════════════════ */
+
 function formatDate(dateStr) {
   const d = new Date(dateStr);
   return d.toLocaleDateString("en-US", {
@@ -121,9 +108,6 @@ function formatDate(dateStr) {
   });
 }
 
-/* ══════════════════════════════════════════
-   BUILD TICKET CARD  (your original logic, restyled)
-══════════════════════════════════════════ */
 function createTicketCard(b, index) {
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(b.ticket_code)}`;
 
@@ -171,7 +155,7 @@ function createTicketCard(b, index) {
     </div>
   `;
 
-  // Flip on click — your original logic
+ 
   card.addEventListener("click", () => {
     card.querySelector(".ticket-inner").classList.toggle("flipped");
   });
@@ -179,9 +163,7 @@ function createTicketCard(b, index) {
   return card;
 }
 
-/* ══════════════════════════════════════════
-   RENDER GRID
-══════════════════════════════════════════ */
+
 function renderGrid(bookings) {
   const container = document.getElementById("booking-list");
   container.innerHTML = "";
@@ -202,9 +184,7 @@ function renderGrid(bookings) {
   container.appendChild(grid);
 }
 
-/* ══════════════════════════════════════════
-   LOAD BOOKINGS  (your original API call)
-══════════════════════════════════════════ */
+
 async function loadBookings() {
   const container = document.getElementById("booking-list");
 
@@ -258,9 +238,7 @@ async function loadBookings() {
   }
 }
 
-/* ══════════════════════════════════════════
-   BOOT
-══════════════════════════════════════════ */
+
 document.addEventListener("DOMContentLoaded", () => {
   initNavbar();
   initUserArea();

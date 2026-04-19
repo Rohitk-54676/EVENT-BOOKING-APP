@@ -80,7 +80,7 @@ form.addEventListener("submit", async (e) => {
     try {
       await emailjs.send(
         "service_2qmrv2n",
-        "template_21nmnv6",   // ⚠️ replace
+        "template_21nmnv6",   
         {
           to_email: userData.email,
           otp: otp,
@@ -105,7 +105,7 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-/* ── Helpers ── */
+
 function getValue(id) { return document.getElementById(id).value.trim(); }
 
 function showError(message, fieldId) {

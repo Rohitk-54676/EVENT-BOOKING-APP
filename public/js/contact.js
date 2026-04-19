@@ -2,9 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const API_URL = "/api/contact";
 
-  /* ══════════════════════════════════════════
-     NAVBAR
-  ══════════════════════════════════════════ */
+
   const navbar    = document.getElementById("navbar");
   const hamburger = document.getElementById("hamburger");
   const mobileMenu= document.getElementById("mobileMenu");
@@ -23,9 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* ══════════════════════════════════════════
-     USER AREA
-  ══════════════════════════════════════════ */
+  
   const token      = localStorage.getItem("token");
   const area       = document.getElementById("userArea");
   const mobileAuth = document.getElementById("mobileAuth");
@@ -51,9 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (user?.email) document.getElementById("cf-email").value = user.email;
   }
 
-  /* ══════════════════════════════════════════
-     SCROLL REVEAL
-  ══════════════════════════════════════════ */
+
   const revealObs = new IntersectionObserver((entries) => {
     entries.forEach((e, i) => {
       if (e.isIntersecting) {
@@ -64,9 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { threshold: 0.1 });
   document.querySelectorAll(".reveal").forEach(el => revealObs.observe(el));
 
-  /* ══════════════════════════════════════════
-     CHARACTER COUNTER
-  ══════════════════════════════════════════ */
+  
   const msgArea  = document.getElementById("cf-message");
   const charCount= document.getElementById("charCount");
 
@@ -77,29 +69,25 @@ document.addEventListener("DOMContentLoaded", () => {
     if (len > 1000) msgArea.value = msgArea.value.slice(0, 1000);
   });
 
-  /* ══════════════════════════════════════════
-     FAQ ACCORDION
-  ══════════════════════════════════════════ */
+ 
   window.toggleFaq = (btn) => {
     const answer = btn.nextElementSibling;
     const isOpen = btn.classList.contains("open");
 
-    // Close all
+   
     document.querySelectorAll(".faq-q.open").forEach(q => {
       q.classList.remove("open");
       q.nextElementSibling.classList.remove("open");
     });
 
-    // Open clicked if it was closed
+
     if (!isOpen) {
       btn.classList.add("open");
       answer.classList.add("open");
     }
   };
 
-  /* ══════════════════════════════════════════
-     FORM VALIDATION
-  ══════════════════════════════════════════ */
+ 
   function validate() {
     let valid = true;
 
@@ -125,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Message
+   
     const msgVal = msgArea.value.trim();
     const msgErr = document.getElementById("err-message");
     if (msgVal.length < 10) {
@@ -164,9 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("err-message").textContent = "";
   });
 
-  /* ══════════════════════════════════════════
-     FORM SUBMIT
-  ══════════════════════════════════════════ */
+  
   const form   = document.getElementById("contactForm");
   const btn    = document.getElementById("submitBtn");
   const formMsg= document.getElementById("formMsg");

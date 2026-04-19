@@ -1,7 +1,4 @@
-/* ══════════════════════════════════════════
-   ADMIN.JS — All original logic preserved.
-   Navbar init + logout added on top.
-══════════════════════════════════════════ */
+
 
 /* ── Navbar scroll ── */
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,9 +16,7 @@ function logout() {
   window.location.href = "/pages/login.html";
 }
 
-/* ════════════════════════════════════════
-   YOUR ORIGINAL CODE BELOW — UNCHANGED
-════════════════════════════════════════ */
+
 
 let editMode = false;
 let editEventId = null;
@@ -300,11 +295,11 @@ async function startDelete(id) {
     return alert(data.message || "Failed to send OTP");
   }
 
-  // 🔥 SEND EMAIL USING EMAILJS
+ 
   try {
     await emailjs.send(
       "service_2qmrv2n",
-      "template_21nmnv6", // ⚠️ same OTP template
+      "template_21nmnv6", 
       {
         to_email: data.email,
         otp: data.otp,
@@ -316,7 +311,7 @@ async function startDelete(id) {
     return;
   }
 
-  // show input UI
+  
   document.getElementById(`otp-${id}`).style.display = "flex";
 }
 

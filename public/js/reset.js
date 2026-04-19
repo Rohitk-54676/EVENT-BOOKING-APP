@@ -6,7 +6,7 @@ const hidden = document.getElementById("otp");
 
 const API_URL = "/api/auth";
 
-/* ── Show masked email hint ── */
+
 (function showEmailHint() {
   const email = localStorage.getItem("resetEmail");
   if (email) {

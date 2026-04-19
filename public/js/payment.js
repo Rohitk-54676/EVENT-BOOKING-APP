@@ -1,9 +1,4 @@
-/* ══════════════════════════════════════════
-   PAYMENT.JS
-   - Free tickets: Book Now → skip Razorpay
-   - Paid tickets: Pay Now → Razorpay flow
-   - Duplicate booking bug fixed
-══════════════════════════════════════════ */
+
 
 let teamSize = 1;
 let ticketPrice = 0;   // 🔑 tracks whether ticket is free
@@ -13,9 +8,6 @@ const params = new URLSearchParams(window.location.search);
 const eventId = params.get("id");
 const ticketId = Number(params.get("ticket")); // 🔥 IMPORTANT
 
-/* ══════════════════════════════════════════
-   NAVBAR + USER AREA
-══════════════════════════════════════════ */
 document.addEventListener("DOMContentLoaded", () => {
   const navbar = document.getElementById("navbar");
   const hamburger = document.getElementById("hamburger");
@@ -64,9 +56,7 @@ function logout() {
   window.location.href = "/pages/login.html";
 }
 
-/* ══════════════════════════════════════════
-   LOAD TICKET & EVENT DETAILS
-══════════════════════════════════════════ */
+
 async function loadTicketDetails() {
   try {
     const res = await fetch(`/api/events/${eventId}`);
@@ -76,14 +66,14 @@ async function loadTicketDetails() {
     if (!ticket) return;
 
     teamSize = ticket.team_size;
-    ticketPrice = parseFloat(ticket.price) || 0;  // 🔑 store price globally
+    ticketPrice = parseFloat(ticket.price) || 0;  
 
     const isFree = ticketPrice === 0;
 
-    /* ── Update button label based on price ── */
+    
     updatePayButton(isFree);
 
-    /* ── Build member forms ── */
+    
     const container = document.getElementById("membersContainer");
     const loading = document.getElementById("membersLoading");
     if (loading) loading.style.display = "none";
@@ -149,9 +139,7 @@ async function loadTicketDetails() {
   }
 }
 
-/* ══════════════════════════════════════════
-   UPDATE BUTTON — Free vs Paid
-══════════════════════════════════════════ */
+
 function updatePayButton(isFree) {
   const btn = document.getElementById("payBtn");
   if (!btn) return;
@@ -183,9 +171,7 @@ function updatePayButton(isFree) {
   }
 }
 
-/* ══════════════════════════════════════════
-   POPULATE ORDER SUMMARY
-══════════════════════════════════════════ */
+
 function populateSummary(event, ticket, isFree) {
   const loadingEl = document.getElementById("summaryLoading");
   const contentEl = document.getElementById("summaryContent");
@@ -234,10 +220,7 @@ function setText(id, val) {
   if (el) el.textContent = val || "";
 }
 
-/* ══════════════════════════════════════════
-   COLLECT & VALIDATE MEMBER INPUTS
-   Shared by both free and paid flows
-══════════════════════════════════════════ */
+
 function collectMembers() {
   const names = document.querySelectorAll(".member-name");
   const regs = document.querySelectorAll(".member-reg");
@@ -281,10 +264,7 @@ function collectMembers() {
   return members;
 }
 
-/* ══════════════════════════════════════════
-   🆓 FREE BOOKING FLOW
-   Register → confirm directly, skip Razorpay
-══════════════════════════════════════════ */
+
 async function bookFree() {
   if (!token) {
     showMsg("Please login to book", "error");
@@ -297,7 +277,7 @@ async function bookFree() {
   }
 
   const members = collectMembers();
-  if (!members) return;  // validation failed
+  if (!members) return;  
 
   setLoading(true);
   clearMsg();
@@ -305,7 +285,7 @@ async function bookFree() {
   let registrationId = null;
 
   try {
-    // STEP 1: Create booking (same endpoint as paid)
+    
     const regRes = await fetch(`/api/events/${eventId}/register`, {
       method: "POST",
       headers: {
@@ -320,7 +300,7 @@ async function bookFree() {
 
     registrationId = regData.registrationId;
 
-    // STEP 2: Confirm free booking (no Razorpay needed)
+    
     const confirmRes = await fetch(`/api/payment/free-booking`, {
       method: "POST",
       headers: {
@@ -332,13 +312,13 @@ async function bookFree() {
 
     const confirmData = await confirmRes.json();
     if (!confirmRes.ok) throw new Error(confirmData.message);
-    // 🔥 SEND TICKET EMAIL (FREE FLOW)
+
     try {
       const ticket = confirmData.ticket;
 
       await emailjs.send(
         "service_2qmrv2n",
-        "template_gxm4bjk",   // ⚠️ your template
+        "template_gxm4bjk",   
         {
           to_email: ticket.email,
           eventName: ticket.eventName,
@@ -364,8 +344,7 @@ async function bookFree() {
   } catch (err) {
     console.error("FREE BOOKING ERROR:", err);
 
-    // 🔑 Step 1 succeeded but Step 2 failed — delete dangling registration
-    // so user can try again without duplicate key error
+   
     if (registrationId) {
       try {
         await fetch("/api/payment/delete", {
@@ -386,9 +365,7 @@ async function bookFree() {
   }
 }
 
-/* ══════════════════════════════════════════
-   💳 PAID BOOKING FLOW — YOUR ORIGINAL LOGIC
-══════════════════════════════════════════ */
+
 async function pay() {
   if (!token) {
     showMsg("Login required", "error");
@@ -401,7 +378,7 @@ async function pay() {
   }
 
   const members = collectMembers();
-  if (!members) return;  // validation failed
+  if (!members) return; 
 
   setLoading(true);
   clearMsg();
@@ -409,7 +386,7 @@ async function pay() {
   let registrationId = null;
 
   try {
-    // 🟡 STEP 1: CREATE BOOKING
+    
     const regRes = await fetch(`/api/events/${eventId}/register`, {
       method: "POST",
       headers: {
@@ -424,7 +401,7 @@ async function pay() {
 
     registrationId = regData.registrationId;
 
-    // 🟡 STEP 2: CREATE ORDER
+   
     const orderRes = await fetch(`/api/payment/create-order`, {
       method: "POST",
       headers: {
@@ -437,8 +414,7 @@ async function pay() {
     const orderData = await orderRes.json();
 
     if (!orderRes.ok) {
-      // 🔑 KEY FIX: Order creation failed → delete dangling registration
-      // This prevents the duplicate key error on retry
+     
       if (registrationId) {
         try {
           await fetch("/api/payment/delete", {
@@ -456,14 +432,12 @@ async function pay() {
       throw new Error(orderData.message);
     }
 
-    // 🟡 STEP 3: OPEN RAZORPAY
     const options = {
       key: orderData.key,
       amount: orderData.amount,
       currency: orderData.currency,
       order_id: orderData.orderId,
 
-      // ✅ SUCCESS HANDLER — YOUR ORIGINAL
       handler: async function (response) {
         try {
           const verifyRes = await fetch(`/api/payment/verify`, {
@@ -483,13 +457,12 @@ async function pay() {
           const verifyData = await verifyRes.json();
           if (!verifyRes.ok) throw new Error(verifyData.message);
 
-          // 🔥 NEW: SEND TICKET EMAIL
           try {
             const ticket = verifyData.ticket;
 
             await emailjs.send(
               "service_2qmrv2n",
-              "template_gxm4bjk",   // ⚠️ your template
+              "template_gxm4bjk",  
               {
                 to_email: ticket.email,
                 eventName: ticket.eventName,
@@ -551,9 +524,7 @@ async function pay() {
   }
 }
 
-/* ══════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════ */
+
 function setLoading(state) {
   const btn = document.getElementById("payBtn");
   if (!btn) return;
@@ -575,7 +546,5 @@ function clearMsg() {
   el.className = "pay-msg";
 }
 
-/* ══════════════════════════════════════════
-   BOOT
-══════════════════════════════════════════ */
+
 loadTicketDetails();
